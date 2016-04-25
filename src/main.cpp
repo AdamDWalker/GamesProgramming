@@ -355,8 +355,8 @@ int main( int argc, char* args[] )
 
 	testRect.x = 150;
 	testRect.y = 150;
-	testRect.w = 50;
-	testRect.h = 50;
+	testRect.w = 30;
+	testRect.h = 30;
 
 	floorRect.x = 0;
 	floorRect.y = 450;
