@@ -8,7 +8,7 @@
 #include <SDL.h>
 #include <SDL_image.h>
 #include <SDL_ttf.h>
-
+#include "sprite.h"
 #else // NOT compiling on windows
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
@@ -43,6 +43,8 @@ SDL_Rect ladderRect;
 SDL_Surface *eggSurface;
 SDL_Texture *eggTexture;
 SDL_Rect eggRect;
+
+sprite player("./assets/red_square.png", 150.0f, 150.0f, 30.0f, 30.0f, ren);
 
 float moveX = 0.0f;
 float moveY = 0.0f;
@@ -224,7 +226,8 @@ void render()
 		SDL_RenderCopy(ren, floorTexture, NULL, &floorRect);
 		SDL_RenderCopy(ren, ladderTexture, NULL, &ladderRect);
 		SDL_RenderCopy(ren, eggTexture, NULL, &eggRect);
-		SDL_RenderCopy(ren, testTexture, NULL, &testRect);
+		SDL_RenderCopy(ren, player.texture, NULL, &player.rect);
+		//SDL_RenderCopy(ren, testTexture, NULL, &testRect);
 
 		//Draw the text
 		SDL_RenderCopy(ren, messageTexture, NULL, &message_rect);
@@ -289,6 +292,7 @@ int main( int argc, char* args[] )
 		cleanExit(1);
 	}
 
+	// ===================================================== PLAYER STUFF HERE ====================================================
 	std::string imgPath = "./assets/red_square.png";
 	testSurface = IMG_Load(imgPath.c_str());
 	if (testSurface == nullptr) {
@@ -303,6 +307,9 @@ int main( int argc, char* args[] )
 		cleanExit(1);
 	}
 
+	
+
+	// ==================================================== PLAYER STUFF ENDS HERE ================================================
 	std::string imPath = "./assets/green_square.png";
 	ladderSurface = IMG_Load(imPath.c_str());
 	if (ladderSurface == nullptr) {
