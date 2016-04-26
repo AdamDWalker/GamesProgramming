@@ -4,7 +4,7 @@
 //
 // Standard constructor for now
 //
-sprite::sprite(std::string imgPath, float rectX, float rectY, float rectW, float rectH, SDL_Renderer* ren)
+sprite::sprite(std::string imgPath, int rectX, int rectY, int rectW, int rectH, SDL_Renderer* ren)
 {
 	rect.x = rectX;
 	rect.y = rectY;
@@ -24,7 +24,7 @@ sprite::sprite(std::string imgPath, float rectX, float rectY, float rectW, float
 		std::cout << "SDL_CreateTextureFromSurface Error: " << SDL_GetError() << std::endl;
 		//cleanExit(1);
 	}
-
+	std::cout << "Created sprite object sucessfully" << std::endl;
 }
 
 // Not sure what to put in here at the moment - Will come back to

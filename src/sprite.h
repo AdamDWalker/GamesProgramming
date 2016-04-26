@@ -15,7 +15,7 @@
 class sprite
 {
 public:
-	sprite(std::string imgPath, float rectX, float rectY, float rectW, float rectH, SDL_Renderer* ren);
+	sprite(std::string imgPath, int rectX, int rectY, int rectW, int rectH, SDL_Renderer* ren);
 	~sprite();
 	static void render(SDL_Renderer *ren, SDL_Texture *texture, SDL_Rect *srcRect, SDL_Rect *dstRect);
 

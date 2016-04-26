@@ -44,7 +44,7 @@ SDL_Surface *eggSurface;
 SDL_Texture *eggTexture;
 SDL_Rect eggRect;
 
-sprite player("./assets/red_square.png", 150.0f, 150.0f, 30.0f, 30.0f, ren);
+sprite player("./assets/red_square.png", 150, 150, 30, 30, ren);
 
 float moveX = 0.0f;
 float moveY = 0.0f;
@@ -234,7 +234,7 @@ void render()
 		SDL_RenderCopy(ren, floorTexture, NULL, &floorRect);
 		SDL_RenderCopy(ren, ladderTexture, NULL, &ladderRect);
 		SDL_RenderCopy(ren, eggTexture, NULL, &eggRect);
-		player.render(ren, player.texture, NULL, &player.rect);
+		//player.render(ren, player.texture, NULL, &player.rect);
 		//SDL_RenderCopy(ren, player.texture, NULL, &player.rect);
 		//SDL_RenderCopy(ren, testTexture, NULL, &testRect);
 
