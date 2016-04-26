@@ -4,13 +4,12 @@
 //
 // Standard constructor for now
 //
-sprite::sprite(std::string imgPath, int rectX, int rectY, int rectW, int rectH, SDL_Renderer* ren)
+sprite::sprite(std::string imgPath, int rectX, int rectY, int rectW, int rectH, SDL_Renderer *ren)
 {
 	rect.x = rectX;
 	rect.y = rectY;
 	rect.w = rectW;
 	rect.h = rectH;
-
 
 	surface = IMG_Load(imgPath.c_str());
 	if (surface == nullptr) {
@@ -30,9 +29,11 @@ sprite::sprite(std::string imgPath, int rectX, int rectY, int rectW, int rectH, 
 // Not sure what to put in here at the moment - Will come back to
 sprite::~sprite()
 {
+	SDL_DestroyTexture(texture);
 }
 
-void sprite::render(SDL_Renderer * ren, SDL_Texture * texture, SDL_Rect * srcRect, SDL_Rect * dstRect)
+void sprite::render(SDL_Renderer *ren)
 {
-	SDL_RenderCopy(ren, texture, srcRect, dstRect);
+	//std::cout << "Render called" << std::endl;
+	SDL_RenderCopy(ren, texture, NULL, &rect);
 }
