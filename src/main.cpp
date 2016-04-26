@@ -8,7 +8,7 @@
 #include <SDL.h>
 #include <SDL_image.h>
 #include <SDL_ttf.h>
-
+#include "sprite.h"
 #else // NOT compiling on windows
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
@@ -18,7 +18,7 @@
 std::string exeName;
 SDL_Window *win; //pointer to the SDL_Window
 SDL_Renderer *ren; //pointer to the SDL_Renderer
-SDL_Surface *surface; //pointer to the SDL_Surface
+SDL_Surface *surface; //pointer to the SDL_Surfaced
 SDL_Texture *tex; //pointer to the SDL_Texture
 SDL_Surface *messageSurface; //pointer to the SDL_Surface for message
 SDL_Texture *messageTexture; //pointer to the SDL_Texture for message
@@ -27,7 +27,6 @@ SDL_Rect message_rect; //SDL_rect for the message
 // ========================================================== These are test stuff so I should rename and clean these up at some point ================================================================
 SDL_Surface *testSurface; //
 SDL_Texture *testTexture; // These are for the player 
-SDL_Rect testRect;		  //
 
 // ========================================================== These are for the blue platform =============================================
 SDL_Surface *floorSurface;
@@ -43,6 +42,7 @@ SDL_Rect ladderRect;
 SDL_Surface *eggSurface;
 SDL_Texture *eggTexture;
 SDL_Rect eggRect;
+sprite* player;
 
 float moveX = 0.0f;
 float moveY = 0.0f;
@@ -100,7 +100,7 @@ void handleInput()
 
 					case SDLK_SPACE:
 						//moveY = -10.0f; // This is negative because the origin is top left so negative goes up
-						testRect.y -= 40.0f;
+						player->rect.y -= 40.0f;
 						break;
 
 					case SDLK_w:
@@ -149,31 +149,38 @@ void handleInput()
 	}
 }
 // end::handleInput[]
+/*
+// This is early in the program so that objects can be created here and the function called in main.
+// Hopefully this should give them a good place to group together too and still work properly :/
+void createObjects()
+{
+	sprite player("./assets/red_square.png", 150.0f, 150.0f, 30.0f, 30.0f, ren);
+}*/
 
 // tag::updateSimulation[]
 void updateSimulation(double simLength = 0.02) //update simulation with an amount of time to simulate for (in seconds)
 {
 
-	testRect.x += moveX * simLength * moveSpeed;
-	//testRect.y += moveY * simLength * moveSpeed;    // These have been moved into the if statement
-	//testRect.y += gravity * simLength * moveSpeed;  // below but I'll keep them around anyway
+	player->rect.x += moveX * simLength * moveSpeed;
+	//player->rect.y += moveY * simLength * moveSpeed;    // These have been moved into the if statement
+	//player->rect.y += gravity * simLength * moveSpeed;  // below but I'll keep them around anyway
 
 #pragma region On Ladder Move Check
 	if (onLadder)
 	{
 		gravity = 0.0f;
-		testRect.y += moveY * simLength * moveSpeed; // This should work for now
+		player->rect.y += moveY * simLength * moveSpeed; // This should work for now
 	}
 	else
 	{
-		testRect.y += gravity * simLength * moveSpeed; // This will need chagning up a bit to account for player jumping and stuff
+		player->rect.y += gravity * simLength * moveSpeed; // This will need chagning up a bit to account for player jumping and stuff
 	}
 #pragma endregion
 
 #pragma region Platform collision
 	// If the bottom of the player (rect.y + rect.h) > top of platform (rect.y) that's a collision.
 	// Test for collision with the platform
-	if ((testRect.y + testRect.h) >= floorRect.y)
+	if ((player->rect.y + player->rect.h) >= floorRect.y)
 	{
 		gravity = 0.0f;
 		//std::cout << "Collision Detected" << std::endl;
@@ -188,7 +195,7 @@ void updateSimulation(double simLength = 0.02) //update simulation with an amoun
 	// Test for on ladder
 	// if right of player (rext.x + rect.w) < ladder right (rect.x + rect.w) && left (rect.x) > ladder left (rect.x)
 	// then it's within the ladder bounds.
-	if ((testRect.x + testRect.w) < (ladderRect.x + ladderRect.w) && (testRect.x > ladderRect.x) && (testRect.y + testRect.h) < (ladderRect.y + ladderRect.h + 1.0f)) // The 1.0f allows the player to be 1 px higher and then the logic works. == Should fix this later but cba rn 25/4/16
+	if ((player->rect.x + player->rect.w) < (ladderRect.x + ladderRect.w) && (player->rect.x > ladderRect.x) && (player->rect.y + player->rect.h) < (ladderRect.y + ladderRect.h + 1.0f)) // The 1.0f allows the player to be 1 px higher and then the logic works. == Should fix this later but cba rn 25/4/16
 	{
 		onLadder = true;
 		//gravity = 0.0f;
@@ -205,11 +212,11 @@ void updateSimulation(double simLength = 0.02) //update simulation with an amoun
 	// if player right is between egg left and right OR player left is between egg left and right
 	// The top must also be above the bottom of the egg or the bottom below the top of the egg, so that
 	// it is vertically in the correct place too
-	if (((((testRect.x + testRect.w) > eggRect.x) &&									//
-		(testRect.x + testRect.w) < (eggRect.x + eggRect.w)) ||							// This is probably overly complicated
-		(((testRect.x) > eggRect.x) && (testRect.x) < (eggRect.x + eggRect.w))) &&		// It seems to work for now although the 
-		(((testRect.y) < (eggRect.y + eggRect.h)) ||									// vertical stuff might be broken. I will come 
-		((testRect.y + testRect.h) > eggRect.y)))										// back and fix this later
+	if (((((player->rect.x + player->rect.w) > eggRect.x) &&									//
+		(player->rect.x + player->rect.w) < (eggRect.x + eggRect.w)) ||							// This is probably overly complicated
+		(((player->rect.x) > eggRect.x) && (player->rect.x) < (eggRect.x + eggRect.w))) &&		// It seems to work for now although the 
+		(((player->rect.y) < (eggRect.y + eggRect.h)) ||									// vertical stuff might be broken. I will come 
+		((player->rect.y + player->rect.h) > eggRect.y)))										// back and fix this later
 	{																					//
 		std::cout << "Collide" << std::endl;
 	}
@@ -224,7 +231,9 @@ void render()
 		SDL_RenderCopy(ren, floorTexture, NULL, &floorRect);
 		SDL_RenderCopy(ren, ladderTexture, NULL, &ladderRect);
 		SDL_RenderCopy(ren, eggTexture, NULL, &eggRect);
-		SDL_RenderCopy(ren, testTexture, NULL, &testRect);
+		player->render(ren);
+		//SDL_RenderCopy(ren, player.texture, NULL, &player.rect);
+		//SDL_RenderCopy(ren, testTexture, NULL, &player->rect);
 
 		//Draw the text
 		SDL_RenderCopy(ren, messageTexture, NULL, &message_rect);
@@ -289,6 +298,7 @@ int main( int argc, char* args[] )
 		cleanExit(1);
 	}
 
+	// ===================================================== PLAYER STUFF HERE ====================================================
 	std::string imgPath = "./assets/red_square.png";
 	testSurface = IMG_Load(imgPath.c_str());
 	if (testSurface == nullptr) {
@@ -303,6 +313,12 @@ int main( int argc, char* args[] )
 		cleanExit(1);
 	}
 
+	player = new sprite("./assets/red_square.png", 150.0f, 150.0f, 30.0f, 30.0f, ren);
+	//createObjects();
+
+	// ==================================================== PLAYER STUFF ENDS HERE ================================================
+
+	// ================================================ This is the 'ladder' ==========================================
 	std::string imPath = "./assets/green_square.png";
 	ladderSurface = IMG_Load(imPath.c_str());
 	if (ladderSurface == nullptr) {
@@ -316,6 +332,7 @@ int main( int argc, char* args[] )
 		std::cout << "SDL_CreateTextureFromSurface Error: " << SDL_GetError() << std::endl;
 		cleanExit(1);
 	}
+	// ================================================ End of the 'ladder' ==========================================
 
 	std::string Path = "./assets/egg.png";
 	eggSurface = IMG_Load(Path.c_str());
@@ -353,10 +370,12 @@ int main( int argc, char* args[] )
 	message_rect.w = 180;
 	message_rect.h = 60;
 
-	testRect.x = 150;
-	testRect.y = 150;
-	testRect.w = 30;
-	testRect.h = 30;
+	// ======================= These belong to the player ====================
+	player->rect.x = 150;
+	player->rect.y = 150;
+	player->rect.w = 30;
+	player->rect.h = 30;
+	// ======================= Player stuff here - needs to go at some point ===================
 
 	floorRect.x = 0;
 	floorRect.y = 450;
