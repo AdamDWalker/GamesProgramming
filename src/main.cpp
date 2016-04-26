@@ -44,6 +44,7 @@ SDL_Surface *eggSurface;
 SDL_Texture *eggTexture;
 SDL_Rect eggRect;
 
+sprite player("./assets/red_square.png", 150.0f, 150.0f, 30.0f, 30.0f, ren);
 
 float moveX = 0.0f;
 float moveY = 0.0f;
@@ -150,6 +151,13 @@ void handleInput()
 	}
 }
 // end::handleInput[]
+/*
+// This is early in the program so that objects can be created here and the function called in main.
+// Hopefully this should give them a good place to group together too and still work properly :/
+void createObjects()
+{
+	sprite player("./assets/red_square.png", 150.0f, 150.0f, 30.0f, 30.0f, ren);
+}*/
 
 // tag::updateSimulation[]
 void updateSimulation(double simLength = 0.02) //update simulation with an amount of time to simulate for (in seconds)
@@ -218,7 +226,6 @@ void updateSimulation(double simLength = 0.02) //update simulation with an amoun
 
 void render()
 {
-	sprite player("./assets/red_square.png", 150.0f, 150.0f, 30.0f, 30.0f, ren);
 
 		//First clear the renderer
 		SDL_RenderClear(ren);
@@ -227,7 +234,8 @@ void render()
 		SDL_RenderCopy(ren, floorTexture, NULL, &floorRect);
 		SDL_RenderCopy(ren, ladderTexture, NULL, &ladderRect);
 		SDL_RenderCopy(ren, eggTexture, NULL, &eggRect);
-		SDL_RenderCopy(ren, player.texture, NULL, &player.rect);
+		player.render(ren, player.texture, NULL, &player.rect);
+		//SDL_RenderCopy(ren, player.texture, NULL, &player.rect);
 		//SDL_RenderCopy(ren, testTexture, NULL, &testRect);
 
 		//Draw the text
@@ -309,7 +317,7 @@ int main( int argc, char* args[] )
 	}
 
 	//sprite player("./assets/red_square.png", 150.0f, 150.0f, 30.0f, 30.0f, ren);
-
+	//createObjects();
 
 	// ==================================================== PLAYER STUFF ENDS HERE ================================================
 	std::string imPath = "./assets/green_square.png";
