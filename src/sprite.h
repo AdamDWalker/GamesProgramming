@@ -18,8 +18,8 @@ public:
 	sprite(std::string imgPath, float rectX, float rectY, float rectW, float rectH, SDL_Renderer* ren);
 	~sprite();
 
-	static SDL_Surface* surface;
-	static SDL_Texture* texture;
-	static SDL_Rect rect;
+	SDL_Surface* surface;
+	SDL_Texture* texture;
+	SDL_Rect rect;
 };
 

@@ -18,7 +18,7 @@
 std::string exeName;
 SDL_Window *win; //pointer to the SDL_Window
 SDL_Renderer *ren; //pointer to the SDL_Renderer
-SDL_Surface *surface; //pointer to the SDL_Surface
+SDL_Surface *surface; //pointer to the SDL_Surfaced
 SDL_Texture *tex; //pointer to the SDL_Texture
 SDL_Surface *messageSurface; //pointer to the SDL_Surface for message
 SDL_Texture *messageTexture; //pointer to the SDL_Texture for message
@@ -44,7 +44,6 @@ SDL_Surface *eggSurface;
 SDL_Texture *eggTexture;
 SDL_Rect eggRect;
 
-sprite player("./assets/red_square.png", 150.0f, 150.0f, 30.0f, 30.0f, ren);
 
 float moveX = 0.0f;
 float moveY = 0.0f;
@@ -219,6 +218,8 @@ void updateSimulation(double simLength = 0.02) //update simulation with an amoun
 
 void render()
 {
+	sprite player("./assets/red_square.png", 150.0f, 150.0f, 30.0f, 30.0f, ren);
+
 		//First clear the renderer
 		SDL_RenderClear(ren);
 
@@ -307,7 +308,8 @@ int main( int argc, char* args[] )
 		cleanExit(1);
 	}
 
-	
+	//sprite player("./assets/red_square.png", 150.0f, 150.0f, 30.0f, 30.0f, ren);
+
 
 	// ==================================================== PLAYER STUFF ENDS HERE ================================================
 	std::string imPath = "./assets/green_square.png";
