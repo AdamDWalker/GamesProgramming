@@ -2,7 +2,7 @@
 #include <vector>
 #include <algorithm>
 #include <string>
-
+#include <fstream>
 
 #ifdef _WIN32 // compiling on windows
 #include <SDL.h>
@@ -148,14 +148,36 @@ void handleInput()
 		}
 	}
 }
-// end::handleInput[]
+// end::handleInput[] 
 /*
 // This is early in the program so that objects can be created here and the function called in main.
-// Hopefully this should give them a good place to group together too and still work properly :/
+// Hopefully this should give them a good place to group together too and still work properly :/ // ========================================= This needs dealing with ====================================
 void createObjects()
 {
 	sprite player("./assets/red_square.png", 150.0f, 150.0f, 30.0f, 30.0f, ren);
 }*/
+
+void tileMap(std::string fileName)
+{
+	char tileMap[20][27];
+	std::ifstream file(fileName);
+	if (file.is_open())
+	{
+		// This goes down the columns, taking each row then moving down
+		for (int i = 0; i < 27; i++)
+		{
+			std::cout << "Outer Loop" << std::endl;
+			// This goes along each row
+			for (int j = 0; j < 20; i++)
+			{
+				// Take that position and put the sprite in the right place
+				file >> tileMap[i][j];
+				//std::cout << tileMap[i][j];
+			}
+		}
+	}
+	
+}
 
 // tag::updateSimulation[]
 void updateSimulation(double simLength = 0.02) //update simulation with an amount of time to simulate for (in seconds)
@@ -391,6 +413,8 @@ int main( int argc, char* args[] )
 	eggRect.y = 400;
 	eggRect.w = 40;
 	eggRect.h = 50;
+
+	tileMap("./assets/level.txt");
 
 	while (!done) //loop until done flag is set)
 	{

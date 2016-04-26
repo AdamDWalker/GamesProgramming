@@ -4,7 +4,7 @@
 //
 // Standard constructor for now
 //
-sprite::sprite(std::string imgPath, int rectX, int rectY, int rectW, int rectH, SDL_Renderer *ren)
+sprite::sprite(std::string imgPath, float rectX, float rectY, float rectW, float rectH, SDL_Renderer *ren)
 {
 	rect.x = rectX;
 	rect.y = rectY;
