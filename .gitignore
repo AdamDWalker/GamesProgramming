@@ -50,6 +50,7 @@ Makefile
 [Dd]ebug/
 [Dd]ebugPublic/
 [Rr]eleases/
+[Bb]in/
 build/
 bld/
 [Oo]bj/

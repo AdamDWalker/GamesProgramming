@@ -9,6 +9,8 @@
 #include <SDL_image.h>
 #include <SDL_ttf.h>
 #include "sprite.h"
+#include "vector.h"
+
 #else // NOT compiling on windows
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
@@ -42,6 +44,7 @@ SDL_Rect ladderRect;
 SDL_Surface *eggSurface;
 SDL_Texture *eggTexture;
 SDL_Rect eggRect;
+
 sprite* player;
 
 const int screenW = 600;
@@ -55,7 +58,8 @@ bool isJumping = false; // ====================================== Do this later 
 bool onLadder = false; // This will determine if the up and down keys work
 bool done = false;
 
-std::vector<sprite> sprites; 
+std::vector<sprite*> sprites; // This may be causing some problems I'm not sure
+sprite* platform;
 
 int tileMap[27][20] = { { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
 						{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
@@ -65,7 +69,7 @@ int tileMap[27][20] = { { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
 						{ 0, 0, 0, 0, 0, 0, 3, 2, 0, 4, 0, 0, 0, 3, 4, 0, 0, 0, 0, 3 },
 						{ 0, 0, 0, 0, 0, 1, 1, 2, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1 },
 						{ 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-						{ 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+	 					{ 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
 						{ 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 3, 4, 0, 0, 0, 0, 0, 0, 0, 0 },
 						{ 0, 0, 0, 0, 3, 0, 0, 2, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0 },
 						{ 0, 0, 0, 1, 1, 1, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0 },
@@ -101,8 +105,9 @@ void drawTileMap()
 			if (tileMap[i][j] == 1)
 			{
 				// This is a platform
-				sprite platform("./assets/red_square.png", 10, 10, spriteW, spriteH, ren);
-				std::cout << std::to_string(spriteX) << " " << std::to_string(spriteY) << std::endl;
+				platform = new sprite("./assets/red_square.png", spriteX, spriteY, spriteW, spriteH, ren);
+				//platform.render(ren);
+				//std::cout << std::to_string(spriteX) << " " << std::to_string(spriteY) << std::endl;
 				sprites.push_back(platform);
 			}
 			// Do stuff THEN update positions
@@ -123,6 +128,10 @@ void drawTileMap()
 	}
 	//std::cout << std::endl;
 	//std::cout << std::to_string(sprites.size());
+}
+
+void checkCollision(sprite player, sprite object)
+{
 }
 
 void handleInput()
@@ -162,8 +171,8 @@ void handleInput()
 					case SDLK_ESCAPE: done = true;
 
 					case SDLK_d: 
-						// Move player right
-						
+						// Move player right 
+						player->playerState = sprite::movingRight;
 						moveX = 10.0f; // This doesn't work when set to 1 or 5 for some reason
 						break;
 
@@ -330,11 +339,11 @@ void render()
 		SDL_RenderCopy(ren, ladderTexture, NULL, &ladderRect);
 		SDL_RenderCopy(ren, eggTexture, NULL, &eggRect);
 		player->render(ren);
-		/*sprites[2].render(ren);
-		for (std::vector<sprite>::iterator it = sprites.begin(); it != sprites.end(); ++it)
+		//sprites[2].render(ren);
+		for (auto object : sprites)
 		{
-			it->render(ren);
-		}*/
+			object->render(ren);
+		}
 
 		//SDL_RenderCopy(ren, player.texture, NULL, &player.rect);
 		//SDL_RenderCopy(ren, testTexture, NULL, &player->rect);
@@ -406,7 +415,6 @@ int main( int argc, char* args[] )
 
 
 	player = new sprite("./assets/red_square.png", 150.0f, 150.0f, 30.0f, 30.0f, ren);
-	//createObjects();
 
 	// ==================================================== PLAYER STUFF ENDS HERE ================================================
 
@@ -485,9 +493,9 @@ int main( int argc, char* args[] )
 	eggRect.h = 50;
 
 	drawTileMap();
-	for (std::vector<sprite>::iterator it = sprites.begin(); it != sprites.end(); ++it)
+	for (auto thing : sprites)
 	{
-		std::cout << std::to_string(it->rect.x) << " " << std::to_string(it->rect.y) << " " << std::to_string(it->rect.w) << " " << std::to_string(it->rect.h) << std::endl;
+		std::cout << std::to_string(thing->rect.x) << " " << std::to_string(thing->rect.y) << " " << std::to_string(thing->rect.w) << " " << std::to_string(thing->rect.h) << std::endl;
 	}
 
 	while (!done) //loop until done flag is set)

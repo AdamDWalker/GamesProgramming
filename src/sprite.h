@@ -18,8 +18,9 @@ public:
 	sprite(std::string imgPath, float rectX, float rectY, float rectW, float rectH, SDL_Renderer* ren);
 	~sprite();
 	void render(SDL_Renderer *ren);
-	enum playerState;
-	void movement(playerState state);
+	enum state { idle, movingLeft, movingRight, climbUp, climbDown, jumping, falling };
+	state playerState = idle;
+	void movement(state playerState);
 
 	SDL_Surface* surface;
 	SDL_Texture* texture;

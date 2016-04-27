@@ -1,8 +1,9 @@
 #include "sprite.h"
+#include "vector.h"
 
 
-enum playerState {idle, movingLeft, movingRight, climbUp, climbDown, jumping, falling};
-
+enum state { idle, movingLeft, movingRight, climbUp, climbDown, jumping, falling };
+state playerState = idle;
 //
 // Standard constructor for now
 //
@@ -12,7 +13,6 @@ sprite::sprite(std::string imgPath, float rectX, float rectY, float rectW, float
 	rect.y = rectY;
 	rect.w = rectW;
 	rect.h = rectH;
-
 	surface = IMG_Load(imgPath.c_str());
 	if (surface == nullptr) {
 		std::cout << "SDL IMG_Load Error: " << SDL_GetError() << std::endl;
@@ -40,9 +40,9 @@ void sprite::render(SDL_Renderer *ren)
 	SDL_RenderCopy(ren, texture, NULL, &rect);
 }
 
-void movement(playerState state)
+void movement(state playerState)
 {
-	switch (state)
+	switch (playerState)
 	{
 	case idle:
 		// Position not changing, player just standing still
@@ -53,6 +53,7 @@ void movement(playerState state)
 		// Audio for moving should play
 		break;
 	case movingRight:
+		std::cout << "Moving Right" << std::endl;
 		// Position should change to go right
 		// Sprite animation for right
 		// Audio for moving
