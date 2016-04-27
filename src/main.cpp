@@ -105,6 +105,7 @@ void drawTileMap()
 			{
 				// This is a ladder
 				tileSprite = new sprite("./assets/ladder.png", spriteX, spriteY, spriteW, spriteH, ren);
+				tileSprite->type = sprite::ladder;
 				sprites.push_back(tileSprite);
 			}
 			else if (tileMap[i][j] == 3)
@@ -202,8 +203,17 @@ void checkCollision(sprite* object)
 				// Increase score
 			}
 			break;
-		default:
+		case sprite::ladder:
+			if ((player->rect.x > object->rect.x) && ((player->rect.x + player->rect.w) < (object->rect.x + object->rect.w)))
+			//if(boundaryCollide(object))
+			{
+				onLadder = true;
+				//std::cout << "ON LADDER" << std::endl;
+			}
+			//onLadder = false;
 			break;
+		default:
+			break;			
 	}
 }
 
@@ -266,9 +276,8 @@ void handleInput()
 					case SDLK_w:
 						//if (onLadder)
 						player->playerState = sprite::climbUp;
-						{
-							moveY = -10.0f;
-						}
+						gravity = 0.0f;
+						moveY = -10.0f;
 						break;
 
 					case SDLK_s:
@@ -306,11 +315,13 @@ void handleInput()
 
 					case SDLK_w:
 						player->playerState = sprite::idle;
+						gravity = 10.0f;
 						moveY = 0.0f;
 						break;
 
 					case SDLK_s:
 						player->playerState = sprite::idle;
+						gravity = 10.0f;
 						moveY = 0.0f;
 						break;
 				}
@@ -325,9 +336,8 @@ void updateSimulation(double simLength = 0.02) //update simulation with an amoun
 {
 	dt = getDeltaTime();
 	player->movement();
-	player->rect.x += moveX * simLength * moveSpeed;
-	//player->rect.y += moveY * simLength * moveSpeed;    // These have been moved into the if statement
-	//player->rect.y += gravity * simLength * moveSpeed;  // below but I'll keep them around anyway
+	player->rect.x += moveX * moveSpeed * simLength;
+
 
 	for (auto object : sprites)
 	{
@@ -342,13 +352,12 @@ void updateSimulation(double simLength = 0.02) //update simulation with an amoun
 	}
 	else
 	{
-		player->rect.y += gravity * simLength * moveSpeed; // This will need chagning up a bit to account for player jumping and stuff
+		player->rect.y += gravity * simLength * moveSpeed / 2; // This will need chagning up a bit to account for player jumping and stuff
 	}
 #pragma endregion
 
 #pragma region Platform collision
-	// If the bottom of the player (rect.y + rect.h) > top of platform (rect.y) that's a collision.
-	// Test for collision with the platform
+	// Check that the player doesnt fall out of the screen
 	if ((player->rect.y + player->rect.h) >= screenH - 1)
 	{
 		gravity = 0.0f;
@@ -360,35 +369,7 @@ void updateSimulation(double simLength = 0.02) //update simulation with an amoun
 	}
 #pragma endregion
 
-#pragma region On Ladder Collision
-	// Test for on ladder
-	// if right of player (rext.x + rect.w) < ladder right (rect.x + rect.w) && left (rect.x) > ladder left (rect.x)
-	// then it's within the ladder bounds.
-	/*if ((player->rect.x + player->rect.w) < (ladderRect.x + ladderRect.w) && (player->rect.x > ladderRect.x) && (player->rect.y + player->rect.h) < (ladderRect.y + ladderRect.h + 1.0f)) // The 1.0f allows the player to be 1 px higher and then the logic works. == Should fix this later but cba rn 25/4/16
-	{
-		onLadder = true;
-		//gravity = 0.0f;
-	}
-	else
-	{
-		onLadder = false;
-		//gravity = 10.0f;
-	}*/
-#pragma endregion
-
-
-	// Check if player is colliding with the egg at all
-	// if player right is between egg left and right OR player left is between egg left and right
-	// The top must also be above the bottom of the egg or the bottom below the top of the egg, so that
-	// it is vertically in the correct place too
-	/*if (((((player->rect.x + player->rect.w) > eggRect.x) &&									//
-		(player->rect.x + player->rect.w) < (eggRect.x + eggRect.w)) ||							// This is probably overly complicated
-		(((player->rect.x) > eggRect.x) && (player->rect.x) < (eggRect.x + eggRect.w))) &&		// It seems to work for now although the 
-		(((player->rect.y) < (eggRect.y + eggRect.h)) ||										// vertical stuff might be broken. I will come 
-		((player->rect.y + player->rect.h) > eggRect.y)))										// back and fix this later
-	{																							//
-		std::cout << "Collide" << std::endl;
-	}*/
+	onLadder = false;
 }
 
 void render()
