@@ -137,13 +137,27 @@ void drawTileMap()
 	//std::cout << std::endl;
 	//std::cout << std::to_string(sprites.size());
 }
-
-void checkCollision(sprite object)
+void checkCollision(sprite* object)
 {
-	switch (object.type)
+	float playerMinX = player->rect.x;
+	float playerMinY = player->rect.y;
+	float playerMaxX = playerMinX + player->rect.w;
+	float playerMaxY = playerMinY + player->rect.h;
+
+	float objectMinX = object->rect.x;
+	float objectMinY = object->rect.y;
+	float objectMaxX = objectMinX + object->rect.w;
+	float objectMaxY = objectMinY + object->rect.h;
+
+	switch (object->type)
 	{
 		case sprite::platform:
-			if( ((player->rect.y + player->rect.h) > object.rect.y) )
+			// This should check that the bottom of the player is between the top/bottom of the block and also the sides 
+			if ( (((playerMinX > objectMinX) && (playerMinX < objectMaxX)) && ((playerMaxY > objectMinY) && (playerMaxY < objectMaxY))) ||
+				(((playerMaxX > objectMinX) && (playerMaxX < objectMaxX)) && ((playerMaxY > objectMinY) && (playerMaxY < objectMaxY))) )
+			{
+				gravity = 0.0f;
+			}
 			break;
 
 		default:
@@ -195,22 +209,26 @@ void handleInput()
 
 					case SDLK_a:
 						// Move square left
+						player->playerState = sprite::movingLeft;
 						moveX = -10.0f; // This works when -1 
 						break;
 
 					case SDLK_SPACE:
 						//moveY = -10.0f; // This is negative because the origin is top left so negative goes up
+						player->playerState = sprite::jumping;
 						player->rect.y -= 40.0f;
 						break;
 
 					case SDLK_w:
 						//if (onLadder)
+						player->playerState = sprite::climbUp;
 						{
 							moveY = -10.0f;
 						}
 						break;
 
 					case SDLK_s:
+						player->playerState = sprite::climbDown;
 						moveY = 10.0f;
 						break;
 
@@ -233,18 +251,22 @@ void handleInput()
 					case SDLK_ESCAPE: done = true;
 
 					case SDLK_d:
+						player->playerState = sprite::idle;
 						moveX = 0.0f;
 						break;
 
 					case SDLK_a:
+						player->playerState = sprite::idle;
 						moveX = 0.0f;
 						break;
 
 					case SDLK_w:
+						player->playerState = sprite::idle;
 						moveY = 0.0f;
 						break;
 
 					case SDLK_s:
+						player->playerState = sprite::idle;
 						moveY = 0.0f;
 						break;
 				}
@@ -261,6 +283,11 @@ void updateSimulation(double simLength = 0.02) //update simulation with an amoun
 	player->rect.x += moveX * simLength * moveSpeed;
 	//player->rect.y += moveY * simLength * moveSpeed;    // These have been moved into the if statement
 	//player->rect.y += gravity * simLength * moveSpeed;  // below but I'll keep them around anyway
+
+	for (auto object : sprites)
+	{
+		checkCollision(object);
+	}
 
 #pragma region On Ladder Move Check
 	if (onLadder)

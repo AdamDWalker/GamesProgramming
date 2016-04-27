@@ -52,7 +52,6 @@ void sprite::movement()
 		// Audio for moving should play
 		break;
 	case movingRight:
-		std::cout << "Moving Right" << std::endl;
 		// Position should change to go right
 		// Sprite animation for right
 		// Audio for moving
