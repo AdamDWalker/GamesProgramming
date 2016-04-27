@@ -44,6 +44,9 @@ SDL_Texture *eggTexture;
 SDL_Rect eggRect;
 sprite* player;
 
+const int screenW = 800;
+const int screenH = 600;
+
 float moveX = 0.0f;
 float moveY = 0.0f;
 float moveSpeed = 25.0f;
@@ -51,6 +54,46 @@ float gravity = 10.0f;
 bool isJumping = false; // ====================================== Do this later - Probably replace with an enum ====================================
 bool onLadder = false; // This will determine if the up and down keys work
 bool done = false;
+
+int tileMap[27][20] = { { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+						{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+						{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+						{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+						{ 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+						{ 0, 0, 0, 0, 0, 0, 3, 2, 0, 4, 0, 0, 0, 3, 4, 0, 0, 0, 0, 3 },
+						{ 0, 0, 0, 0, 0, 1, 1, 2, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1 },
+						{ 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+						{ 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+						{ 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 3, 4, 0, 0, 0, 0, 0, 0, 0, 0 },
+						{ 0, 0, 0, 0, 3, 0, 0, 2, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0 },
+						{ 0, 0, 0, 1, 1, 1, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0 },
+						{ 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0 },
+						{ 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0 },
+						{ 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 3, 1, 1, 0, 0, 0, 0, 0, 0, 0 },
+						{ 0, 0, 3, 2, 0, 4, 0, 2, 0, 1, 1, 0, 0, 0, 0, 4, 0, 3, 0, 0 },
+						{ 0, 0, 1, 2, 1, 1, 1, 2, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0 },
+						{ 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+						{ 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+						{ 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0, 0, 2, 0, 0, 0 },
+						{ 0, 3, 0, 2, 0, 4, 0, 2, 0, 0, 0, 2, 0, 3, 4, 0, 2, 0, 3, 0 },
+						{ 0, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 2, 1, 1, 1, 1, 2, 1, 1, 0 },
+						{ 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0, 0, 2, 0, 0, 0 },
+						{ 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0, 0, 2, 0, 0, 0 },
+						{ 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0, 0, 2, 0, 0, 0 },
+						{ 0, 0, 4, 0, 3, 0, 0, 2, 0, 0, 0, 2, 0, 4, 0, 0, 2, 0, 0, 0 },
+						{ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 } };
+
+void drawTileMap()
+{
+	for (int i = 0; i <= 26; i++)
+	{
+		std::cout << std::endl;
+		for (int j = 0; j <= 19; j++)
+		{
+			std::cout << std::to_string(tileMap[i][j]);
+		}
+	}
+}
 
 void handleInput()
 {
@@ -157,7 +200,7 @@ void createObjects()
 	sprite player("./assets/red_square.png", 150.0f, 150.0f, 30.0f, 30.0f, ren);
 }*/
 
-void tileMap(std::string fileName)
+/*void tileMap(std::string fileName)
 {
 	char tileMap[20][27];
 	std::ifstream file(fileName);
@@ -177,7 +220,9 @@ void tileMap(std::string fileName)
 		}
 	}
 	
-}
+}*/
+
+
 
 // tag::updateSimulation[]
 void updateSimulation(double simLength = 0.02) //update simulation with an amount of time to simulate for (in seconds)
@@ -289,7 +334,7 @@ int main( int argc, char* args[] )
 	std::cout << "SDL initialised OK!\n";
 
 	//create window
-	win = SDL_CreateWindow("SDL Hello World!", 100, 100, 600, 600, SDL_WINDOW_SHOWN);
+	win = SDL_CreateWindow("SDL Hello World!", 100, 100, screenW, screenH, SDL_WINDOW_SHOWN);
 
 	//error handling
 	if (win == nullptr)
@@ -414,7 +459,8 @@ int main( int argc, char* args[] )
 	eggRect.w = 40;
 	eggRect.h = 50;
 
-	tileMap("./assets/level.txt");
+	//tileMap("./assets/level.txt");
+	drawTileMap();
 
 	while (!done) //loop until done flag is set)
 	{
