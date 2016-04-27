@@ -163,6 +163,7 @@ void handleInput()
 
 					case SDLK_d: 
 						// Move player right
+						
 						moveX = 10.0f; // This doesn't work when set to 1 or 5 for some reason
 						break;
 
@@ -454,7 +455,7 @@ int main( int argc, char* args[] )
 	}
 	SDL_Color White = { 255, 255, 255 };
 	SDL_Color Purple = { 165, 0, 220 };
-	messageSurface = TTF_RenderText_Solid(sans, "Get Chuckie Egged m9", Purple);
+	messageSurface = TTF_RenderText_Solid(sans, "Score: ", Purple);
 	messageTexture = SDL_CreateTextureFromSurface(ren, messageSurface);
 	message_rect.x = 0;
 	message_rect.y = 0;
