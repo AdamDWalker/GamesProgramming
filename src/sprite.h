@@ -22,7 +22,9 @@ public:
 	state playerState = idle;
 	enum spriteType {player, platform, ladder, egg, grain };
 	spriteType type;
+	bool isGrounded = false;
 	void movement();
+	int playerScore;
 
 	SDL_Surface* surface;
 	SDL_Texture* texture;

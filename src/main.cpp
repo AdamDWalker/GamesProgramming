@@ -3,11 +3,14 @@
 #include <algorithm>
 #include <string>
 #include <fstream>
+#include <chrono>
+typedef std::chrono::high_resolution_clock Clock;
 
 #ifdef _WIN32 // compiling on windows
 #include <SDL.h>
 #include <SDL_image.h>
 #include <SDL_ttf.h>
+#include <SDL_mixer.h>
 #include "sprite.h"
 
 #else // NOT compiling on windows
@@ -25,25 +28,6 @@ SDL_Surface *messageSurface; //pointer to the SDL_Surface for message
 SDL_Texture *messageTexture; //pointer to the SDL_Texture for message
 SDL_Rect message_rect; //SDL_rect for the message
 
-// ========================================================== These are test stuff so I should rename and clean these up at some point ================================================================
-SDL_Surface *testSurface; //
-SDL_Texture *testTexture; // These are for the player 
-
-// ========================================================== These are for the blue platform =============================================
-SDL_Surface *floorSurface;
-SDL_Texture *floorTexture;
-SDL_Rect floorRect;
-
-// ========================================================= These are for the green ladder ===================================================
-SDL_Surface *ladderSurface;
-SDL_Texture *ladderTexture;
-SDL_Rect ladderRect;
-
-// ========================================================= These are for the egg ===================================================
-SDL_Surface *eggSurface;
-SDL_Texture *eggTexture;
-SDL_Rect eggRect;
-
 sprite* player;
 
 const int screenW = 800;
@@ -59,7 +43,9 @@ bool isFullscreen = false;
 bool done = false;
 
 std::vector<sprite*> sprites; // This may be causing some problems I'm not sure
-sprite* platform;
+sprite* tileSprite;
+Mix_Chunk* jumpEffect;
+float dt = 0.0f;
 
 int tileMap[27][20] = { { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
 						{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
@@ -105,21 +91,28 @@ void drawTileMap()
 			if (tileMap[i][j] == 1)
 			{
 				// This is a platform
-				platform = new sprite("./assets/blue_square.jpg", spriteX, spriteY, spriteW, spriteH, ren);
-				platform->type = sprite::platform;
-				sprites.push_back(platform);
+				tileSprite = new sprite("./assets/block.png", spriteX, spriteY, spriteW, spriteH, ren);
+				tileSprite->type = sprite::platform;
+				sprites.push_back(tileSprite);
 			}
 			else if (tileMap[i][j] == 2)
 			{
 				// This is a ladder
-				platform = new sprite("./assets/green_square.png", spriteX, spriteY, spriteW, spriteH, ren);
-				sprites.push_back(platform);
+				tileSprite = new sprite("./assets/ladder.png", spriteX, spriteY, spriteW, spriteH, ren);
+				sprites.push_back(tileSprite);
 			}
 			else if (tileMap[i][j] == 3)
 			{
 				// This is an egg
-				platform = new sprite("./assets/egg.png", spriteX, spriteY, spriteW, spriteH, ren);
-				sprites.push_back(platform);
+				tileSprite = new sprite("./assets/egg.png", spriteX, spriteY, spriteW, spriteH, ren);
+				tileSprite->type = sprite::egg;
+				sprites.push_back(tileSprite);
+			}
+			else if (tileMap[i][j] == 4)
+			{
+				// This is the grain
+				tileSprite = new sprite("./assets/grain.png", spriteX, spriteY, spriteW, spriteH, ren);
+				sprites.push_back(tileSprite);
 			}
 
 			if (j == 19) //Final block therefore it needs resetting to 0
@@ -137,7 +130,20 @@ void drawTileMap()
 	//std::cout << std::endl;
 	//std::cout << std::to_string(sprites.size());
 }
-void checkCollision(sprite* object)
+
+float getDeltaTime()
+{
+	auto t1 = Clock::now();
+	auto t2 = Clock::now();
+	float nano = (float)((t2 - t1).count());
+	float dt = nano / 1000000000;
+	//std::cout << "Delta t2-t1: "
+	//	<< dt
+	//	<< " nanoseconds" << std::endl;
+	return dt;
+}
+
+bool boundaryCollide(sprite* object)
 {
 	float playerMinX = player->rect.x;
 	float playerMinY = player->rect.y;
@@ -148,22 +154,46 @@ void checkCollision(sprite* object)
 	float objectMinY = object->rect.y;
 	float objectMaxX = objectMinX + object->rect.w;
 	float objectMaxY = objectMinY + object->rect.h;
+	if ((((playerMinX > objectMinX) && (playerMinX < objectMaxX)) && ((playerMaxY > objectMinY) && (playerMaxY < objectMaxY))) ||
+		(((playerMaxX > objectMinX) && (playerMaxX < objectMaxX)) && ((playerMaxY > objectMinY) && (playerMaxY < objectMaxY ))))
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+void checkCollision(sprite* object)
+{
 
 	switch (object->type)
 	{
 		case sprite::platform:
 			// This should check that the bottom of the player is between the top/bottom of the block and also the sides 
-			if ( (((playerMinX > objectMinX) && (playerMinX < objectMaxX)) && ((playerMaxY > objectMinY) && (playerMaxY < objectMaxY))) ||
-				(((playerMaxX > objectMinX) && (playerMaxX < objectMaxX)) && ((playerMaxY > objectMinY) && (playerMaxY < objectMaxY))) )
+			if (boundaryCollide(object))
 			{
+				//player->rect.y = object->rect.y - player->rect.h; // Triggered mode engaged
+				player->isGrounded = true;
 				gravity = 0.0f;
+				//std::cout << "Collide";
 			}
 			break;
-
+		case sprite::egg:
+			if (boundaryCollide(object))
+			{
+				player->playerScore++;
+				std::cout << "Score: " << player->playerScore << std::endl;
+				// Destroy object
+				// Increase score
+			}
+			break;
 		default:
 			break;
 	}
 }
+
 
 void handleInput()
 {
@@ -215,6 +245,7 @@ void handleInput()
 
 					case SDLK_SPACE:
 						//moveY = -10.0f; // This is negative because the origin is top left so negative goes up
+						Mix_PlayChannel(-1, jumpEffect, 0);
 						player->playerState = sprite::jumping;
 						player->rect.y -= 40.0f;
 						break;
@@ -279,6 +310,7 @@ void handleInput()
 // tag::updateSimulation[]
 void updateSimulation(double simLength = 0.02) //update simulation with an amount of time to simulate for (in seconds)
 {
+	dt = getDeltaTime();
 	player->movement();
 	player->rect.x += moveX * simLength * moveSpeed;
 	//player->rect.y += moveY * simLength * moveSpeed;    // These have been moved into the if statement
@@ -394,6 +426,12 @@ int main( int argc, char* args[] )
 	}
 	std::cout << "SDL initialised OK!\n";
 
+	if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0)
+	{
+		std::cout << "SDL_Mixer init error: " << Mix_GetError() << std::endl;
+		cleanExit(1);
+	}
+	std::cout << "SDP_Mixer Initialised OK!" << std::endl;
 	//create window
 	win = SDL_CreateWindow("SDL Hello World!", 100, 100, screenW, screenH, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
 
@@ -413,6 +451,15 @@ int main( int argc, char* args[] )
 	}
 
 	player = new sprite("./assets/red_square.png", 150.0f, 150.0f, 30.0f, 30.0f, ren);
+	player->playerScore = 0;
+
+	// This is formatted in the same way to the default code from John as it makes sense and I want to stick to it.
+	jumpEffect = Mix_LoadWAV("./assets/jump.wav");
+	if (jumpEffect == nullptr)
+	{
+		std::cout << "Mix_LoadWAV Error: " << Mix_GetError() << std::endl;
+		cleanExit(1);
+	}
 
 	if( TTF_Init() == -1 )
 	{
