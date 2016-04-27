@@ -55,6 +55,7 @@ float moveSpeed = 25.0f;
 float gravity = 10.0f;
 bool isJumping = false; // ====================================== Do this later - Probably replace with an enum ====================================
 bool onLadder = false; // This will determine if the up and down keys work
+bool isFullscreen = false;
 bool done = false;
 
 std::vector<sprite*> sprites; // This may be causing some problems I'm not sure
@@ -105,6 +106,7 @@ void drawTileMap()
 			{
 				// This is a platform
 				platform = new sprite("./assets/blue_square.jpg", spriteX, spriteY, spriteW, spriteH, ren);
+				platform->type = sprite::platform;
 				sprites.push_back(platform);
 			}
 			else if (tileMap[i][j] == 2)
@@ -201,6 +203,10 @@ void handleInput()
 
 					case SDLK_s:
 						moveY = 10.0f;
+						break;
+
+					case SDLK_b:
+						isFullscreen = !isFullscreen; // Invert each time on keypress
 						break;
 				}
 			break;
@@ -322,6 +328,14 @@ void render()
 		//Update the screen
 		SDL_RenderPresent(ren);
 		SDL_RenderSetLogicalSize(ren, screenW, screenH);
+		if (isFullscreen)
+		{
+			SDL_SetWindowFullscreen(win, SDL_WINDOW_FULLSCREEN_DESKTOP);
+		}
+		else
+		{
+			SDL_SetWindowFullscreen(win, NULL);
+		}
 }
 
 void cleanExit(int returnValue)

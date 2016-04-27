@@ -20,6 +20,8 @@ public:
 	void render(SDL_Renderer *ren);
 	enum state { idle, movingLeft, movingRight, climbUp, climbDown, jumping, falling };
 	state playerState = idle;
+	enum spriteType {player, platform, ladder, egg, grain };
+	spriteType type;
 	void movement();
 
 	SDL_Surface* surface;
