@@ -9,7 +9,6 @@
 #include <SDL_image.h>
 #include <SDL_ttf.h>
 #include "sprite.h"
-#include "vector.h"
 
 #else // NOT compiling on windows
 #include <SDL2/SDL.h>
@@ -106,30 +105,20 @@ void drawTileMap()
 			{
 				// This is a platform
 				platform = new sprite("./assets/blue_square.jpg", spriteX, spriteY, spriteW, spriteH, ren);
-				//platform.render(ren);
-				//std::cout << std::to_string(spriteX) << " " << std::to_string(spriteY) << std::endl;
 				sprites.push_back(platform);
 			}
 			else if (tileMap[i][j] == 2)
 			{
 				// This is a ladder
 				platform = new sprite("./assets/green_square.png", spriteX, spriteY, spriteW, spriteH, ren);
-				//platform.render(ren);
-				//std::cout << std::to_string(spriteX) << " " << std::to_string(spriteY) << std::endl;
 				sprites.push_back(platform);
 			}
 			else if (tileMap[i][j] == 3)
 			{
 				// This is an egg
 				platform = new sprite("./assets/egg.png", spriteX, spriteY, spriteW, spriteH, ren);
-				//platform.render(ren);
-				//std::cout << std::to_string(spriteX) << " " << std::to_string(spriteY) << std::endl;
 				sprites.push_back(platform);
 			}
-
-			// Do stuff THEN update positions
-			// ...
-			// ...
 
 			if (j == 19) //Final block therefore it needs resetting to 0
 			{
@@ -332,6 +321,7 @@ void render()
 		player->render(ren);
 		//Update the screen
 		SDL_RenderPresent(ren);
+		SDL_RenderSetLogicalSize(ren, screenW, screenH);
 }
 
 void cleanExit(int returnValue)
@@ -359,10 +349,10 @@ int main( int argc, char* args[] )
 	std::cout << "SDL initialised OK!\n";
 
 	//create window
-	win = SDL_CreateWindow("SDL Hello World!", 100, 100, screenW, screenH, SDL_WINDOW_SHOWN);
+	win = SDL_CreateWindow("SDL Hello World!", 100, 100, screenW, screenH, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
 
 	//error handling
-	if (win == nullptr)
+	if (win == nullptr)	
 	{
 		std::cout << "SDL_CreateWindow Error: " << SDL_GetError() << std::endl;
 		cleanExit(1);
