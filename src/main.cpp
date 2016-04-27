@@ -409,6 +409,7 @@ void render()
 void cleanExit(int returnValue)
 {
 	if (messageTexture != nullptr) SDL_DestroyTexture(messageTexture);
+	if (jumpEffect != nullptr) Mix_FreeChunk(jumpEffect);
 	if (tex != nullptr) SDL_DestroyTexture(tex);
 	if (ren != nullptr) SDL_DestroyRenderer(ren);
 	if (win != nullptr) SDL_DestroyWindow(win);
@@ -450,7 +451,7 @@ int main( int argc, char* args[] )
 		cleanExit(1);
 	}
 
-	player = new sprite("./assets/red_square.png", 150.0f, 150.0f, 30.0f, 30.0f, ren);
+	player = new sprite("./assets/red_square.png", 150.0f, 150.0f, 24.0f, 32.0f, ren);
 	player->playerScore = 0;
 
 	// This is formatted in the same way to the default code from John as it makes sense and I want to stick to it.
