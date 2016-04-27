@@ -44,7 +44,7 @@ SDL_Texture *eggTexture;
 SDL_Rect eggRect;
 sprite* player;
 
-const int screenW = 800;
+const int screenW = 600;
 const int screenH = 600;
 
 float moveX = 0.0f;
@@ -56,6 +56,7 @@ bool onLadder = false; // This will determine if the up and down keys work
 bool done = false;
 
 std::vector<sprite> sprites; 
+
 int tileMap[27][20] = { { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
 						{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
 						{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
@@ -93,14 +94,15 @@ void drawTileMap()
 	int count = 0;
 	for (int i = 0; i <= 26; i++)
 	{
-		std::cout << std::endl;
+		//std::cout << std::endl;
 		for (int j = 0; j <= 19; j++)
 		{
-			std::cout << std::to_string(tileMap[i][j]);
+			//std::cout << std::to_string(tileMap[i][j]);
 			if (tileMap[i][j] == 1)
 			{
 				// This is a platform
-				sprite platform("./assets/blue_square.jpg", spriteX, spriteY, spriteW, spriteH, ren);
+				sprite platform("./assets/red_square.png", 10, 10, spriteW, spriteH, ren);
+				std::cout << std::to_string(spriteX) << " " << std::to_string(spriteY) << std::endl;
 				sprites.push_back(platform);
 			}
 			// Do stuff THEN update positions
@@ -119,8 +121,8 @@ void drawTileMap()
 		}
 		
 	}
-	std::cout << std::endl;
-	std::cout << std::to_string(sprites.size());
+	//std::cout << std::endl;
+	//std::cout << std::to_string(sprites.size());
 }
 
 void handleInput()
@@ -327,7 +329,7 @@ void render()
 		SDL_RenderCopy(ren, ladderTexture, NULL, &ladderRect);
 		SDL_RenderCopy(ren, eggTexture, NULL, &eggRect);
 		player->render(ren);
-		
+		//sprites[2].render(ren);
 		for (std::vector<sprite>::iterator it = sprites.begin(); it != sprites.end(); ++it)
 		{
 			it->render(ren);
@@ -482,6 +484,10 @@ int main( int argc, char* args[] )
 	eggRect.h = 50;
 
 	drawTileMap();
+	for (std::vector<sprite>::iterator it = sprites.begin(); it != sprites.end(); ++it)
+	{
+		std::cout << std::to_string(it->rect.x) << " " << std::to_string(it->rect.y) << " " << std::to_string(it->rect.w) << " " << std::to_string(it->rect.h) << std::endl;
+	}
 
 	while (!done) //loop until done flag is set)
 	{

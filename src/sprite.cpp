@@ -23,7 +23,7 @@ sprite::sprite(std::string imgPath, float rectX, float rectY, float rectW, float
 		std::cout << "SDL_CreateTextureFromSurface Error: " << SDL_GetError() << std::endl;
 		//cleanExit(1);
 	}
-	std::cout << "Created sprite object sucessfully" << std::endl;
+	//std::cout << "Created sprite object sucessfully" << std::endl;
 }
 
 // Not sure what to put in here at the moment - Will come back to
