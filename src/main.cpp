@@ -162,7 +162,7 @@ void handleInput()
 					case SDLK_ESCAPE: done = true;
 
 					case SDLK_d: 
-						// Move square right
+						// Move player right
 						moveX = 10.0f; // This doesn't work when set to 1 or 5 for some reason
 						break;
 
@@ -329,11 +329,11 @@ void render()
 		SDL_RenderCopy(ren, ladderTexture, NULL, &ladderRect);
 		SDL_RenderCopy(ren, eggTexture, NULL, &eggRect);
 		player->render(ren);
-		//sprites[2].render(ren);
+		/*sprites[2].render(ren);
 		for (std::vector<sprite>::iterator it = sprites.begin(); it != sprites.end(); ++it)
 		{
 			it->render(ren);
-		}
+		}*/
 
 		//SDL_RenderCopy(ren, player.texture, NULL, &player.rect);
 		//SDL_RenderCopy(ren, testTexture, NULL, &player->rect);

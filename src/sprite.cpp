@@ -1,6 +1,8 @@
 #include "sprite.h"
 
 
+enum playerState {idle, movingLeft, movingRight, climbUp, climbDown, jumping, falling};
+
 //
 // Standard constructor for now
 //
@@ -36,4 +38,44 @@ void sprite::render(SDL_Renderer *ren)
 {
 	//std::cout << "Render called" << std::endl;
 	SDL_RenderCopy(ren, texture, NULL, &rect);
+}
+
+void movement(playerState state)
+{
+	switch (state)
+	{
+	case idle:
+		// Position not changing, player just standing still
+		break;
+	case movingLeft:
+		// Position should go left
+		// Sprite animation for left
+		// Audio for moving should play
+		break;
+	case movingRight:
+		// Position should change to go right
+		// Sprite animation for right
+		// Audio for moving
+		break;
+	case climbUp:
+		// Position goes up
+		// sprite animation for climbing
+		// audio for climbing
+		break;
+	case climbDown:
+		// Position goes down
+		// sprite animation for climbing
+		// Audio for climbing
+		break;
+	case jumping:
+		// Position goes up a bit then comes back down
+		// Audio for jumping
+		break;
+	case falling:
+		// Position changes downward from gravity
+		// Falling audio?
+		break;
+	default:
+		break;
+	}
 }
