@@ -2,8 +2,7 @@
 #include "vector.h"
 
 
-enum state { idle, movingLeft, movingRight, climbUp, climbDown, jumping, falling };
-state playerState = idle;
+
 //
 // Standard constructor for now
 //
@@ -40,7 +39,7 @@ void sprite::render(SDL_Renderer *ren)
 	SDL_RenderCopy(ren, texture, NULL, &rect);
 }
 
-void movement(state playerState)
+void sprite::movement()
 {
 	switch (playerState)
 	{

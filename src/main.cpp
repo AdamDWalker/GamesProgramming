@@ -47,7 +47,7 @@ SDL_Rect eggRect;
 
 sprite* player;
 
-const int screenW = 600;
+const int screenW = 800;
 const int screenH = 600;
 
 float moveX = 0.0f;
@@ -105,16 +105,33 @@ void drawTileMap()
 			if (tileMap[i][j] == 1)
 			{
 				// This is a platform
-				platform = new sprite("./assets/red_square.png", spriteX, spriteY, spriteW, spriteH, ren);
+				platform = new sprite("./assets/blue_square.jpg", spriteX, spriteY, spriteW, spriteH, ren);
 				//platform.render(ren);
 				//std::cout << std::to_string(spriteX) << " " << std::to_string(spriteY) << std::endl;
 				sprites.push_back(platform);
 			}
+			else if (tileMap[i][j] == 2)
+			{
+				// This is a ladder
+				platform = new sprite("./assets/green_square.png", spriteX, spriteY, spriteW, spriteH, ren);
+				//platform.render(ren);
+				//std::cout << std::to_string(spriteX) << " " << std::to_string(spriteY) << std::endl;
+				sprites.push_back(platform);
+			}
+			else if (tileMap[i][j] == 3)
+			{
+				// This is an egg
+				platform = new sprite("./assets/egg.png", spriteX, spriteY, spriteW, spriteH, ren);
+				//platform.render(ren);
+				//std::cout << std::to_string(spriteX) << " " << std::to_string(spriteY) << std::endl;
+				sprites.push_back(platform);
+			}
+
 			// Do stuff THEN update positions
 			// ...
 			// ...
 
-			if (i == 19) //Final block therefore it needs resetting to 0
+			if (j == 19) //Final block therefore it needs resetting to 0
 			{
 				spriteX = 0.0f;
 				spriteY += spriteH;
@@ -267,7 +284,7 @@ void createObjects()
 // tag::updateSimulation[]
 void updateSimulation(double simLength = 0.02) //update simulation with an amount of time to simulate for (in seconds)
 {
-
+	player->movement();
 	player->rect.x += moveX * simLength * moveSpeed;
 	//player->rect.y += moveY * simLength * moveSpeed;    // These have been moved into the if statement
 	//player->rect.y += gravity * simLength * moveSpeed;  // below but I'll keep them around anyway
@@ -287,7 +304,7 @@ void updateSimulation(double simLength = 0.02) //update simulation with an amoun
 #pragma region Platform collision
 	// If the bottom of the player (rect.y + rect.h) > top of platform (rect.y) that's a collision.
 	// Test for collision with the platform
-	if ((player->rect.y + player->rect.h) >= floorRect.y)
+	if ((player->rect.y + player->rect.h) >= screenH - 1)
 	{
 		gravity = 0.0f;
 		//std::cout << "Collision Detected" << std::endl;
@@ -302,7 +319,7 @@ void updateSimulation(double simLength = 0.02) //update simulation with an amoun
 	// Test for on ladder
 	// if right of player (rext.x + rect.w) < ladder right (rect.x + rect.w) && left (rect.x) > ladder left (rect.x)
 	// then it's within the ladder bounds.
-	if ((player->rect.x + player->rect.w) < (ladderRect.x + ladderRect.w) && (player->rect.x > ladderRect.x) && (player->rect.y + player->rect.h) < (ladderRect.y + ladderRect.h + 1.0f)) // The 1.0f allows the player to be 1 px higher and then the logic works. == Should fix this later but cba rn 25/4/16
+	/*if ((player->rect.x + player->rect.w) < (ladderRect.x + ladderRect.w) && (player->rect.x > ladderRect.x) && (player->rect.y + player->rect.h) < (ladderRect.y + ladderRect.h + 1.0f)) // The 1.0f allows the player to be 1 px higher and then the logic works. == Should fix this later but cba rn 25/4/16
 	{
 		onLadder = true;
 		//gravity = 0.0f;
@@ -311,7 +328,7 @@ void updateSimulation(double simLength = 0.02) //update simulation with an amoun
 	{
 		onLadder = false;
 		//gravity = 10.0f;
-	}
+	}*/
 #pragma endregion
 
 
@@ -319,14 +336,14 @@ void updateSimulation(double simLength = 0.02) //update simulation with an amoun
 	// if player right is between egg left and right OR player left is between egg left and right
 	// The top must also be above the bottom of the egg or the bottom below the top of the egg, so that
 	// it is vertically in the correct place too
-	if (((((player->rect.x + player->rect.w) > eggRect.x) &&									//
+	/*if (((((player->rect.x + player->rect.w) > eggRect.x) &&									//
 		(player->rect.x + player->rect.w) < (eggRect.x + eggRect.w)) ||							// This is probably overly complicated
 		(((player->rect.x) > eggRect.x) && (player->rect.x) < (eggRect.x + eggRect.w))) &&		// It seems to work for now although the 
 		(((player->rect.y) < (eggRect.y + eggRect.h)) ||										// vertical stuff might be broken. I will come 
 		((player->rect.y + player->rect.h) > eggRect.y)))										// back and fix this later
 	{																							//
 		std::cout << "Collide" << std::endl;
-	}
+	}*/
 }
 
 void render()
@@ -335,22 +352,15 @@ void render()
 		SDL_RenderClear(ren);
 
 		//Draw the texture
-		SDL_RenderCopy(ren, floorTexture, NULL, &floorRect);
-		SDL_RenderCopy(ren, ladderTexture, NULL, &ladderRect);
-		SDL_RenderCopy(ren, eggTexture, NULL, &eggRect);
-		player->render(ren);
-		//sprites[2].render(ren);
 		for (auto object : sprites)
 		{
 			object->render(ren);
 		}
 
-		//SDL_RenderCopy(ren, player.texture, NULL, &player.rect);
-		//SDL_RenderCopy(ren, testTexture, NULL, &player->rect);
-
 		//Draw the text
 		SDL_RenderCopy(ren, messageTexture, NULL, &message_rect);
 
+		player->render(ren);
 		//Update the screen
 		SDL_RenderPresent(ren);
 }
@@ -397,57 +407,7 @@ int main( int argc, char* args[] )
 		cleanExit(1);
 	}
 
-	std::string imagePath = "./assets/blue_square.jpg";
-	surface = IMG_Load(imagePath.c_str());
-	if (surface == nullptr){
-		std::cout << "SDL IMG_Load Error: " << SDL_GetError() << std::endl;
-		cleanExit(1);
-	}
-
-	floorTexture = SDL_CreateTextureFromSurface(ren, surface);
-	SDL_FreeSurface(surface);
-	if (floorTexture == nullptr){
-		std::cout << "SDL_CreateTextureFromSurface Error: " << SDL_GetError() << std::endl;
-		cleanExit(1);
-	}
-
-	// ===================================================== PLAYER STUFF HERE ====================================================
-
-
 	player = new sprite("./assets/red_square.png", 150.0f, 150.0f, 30.0f, 30.0f, ren);
-
-	// ==================================================== PLAYER STUFF ENDS HERE ================================================
-
-	// ================================================ This is the 'ladder' ==========================================
-	std::string imPath = "./assets/green_square.png";
-	ladderSurface = IMG_Load(imPath.c_str());
-	if (ladderSurface == nullptr) {
-		std::cout << "SDL IMG_Load Error: " << SDL_GetError() << std::endl;
-		cleanExit(1);
-	}
-
-	ladderTexture = SDL_CreateTextureFromSurface(ren, ladderSurface);
-	SDL_FreeSurface(ladderSurface);
-	if (ladderTexture == nullptr) {
-		std::cout << "SDL_CreateTextureFromSurface Error: " << SDL_GetError() << std::endl;
-		cleanExit(1);
-	}
-	// ================================================ End of the 'ladder' ==========================================
-
-	std::string Path = "./assets/egg.png";
-	eggSurface = IMG_Load(Path.c_str());
-	if (eggSurface == nullptr) {
-		std::cout << "SDL IMG_Load Error: " << SDL_GetError() << std::endl;
-		cleanExit(1);
-	}
-
-	eggTexture = SDL_CreateTextureFromSurface(ren, eggSurface);
-	SDL_FreeSurface(eggSurface);
-	if (eggTexture == nullptr) {
-		std::cout << "SDL_CreateTextureFromSurface Error: " << SDL_GetError() << std::endl;
-		cleanExit(1);
-	}
-
 
 	if( TTF_Init() == -1 )
 	{
@@ -470,32 +430,10 @@ int main( int argc, char* args[] )
 	message_rect.w = 180;
 	message_rect.h = 60;
 
-	// ======================= These belong to the player ====================
-	player->rect.x = 150;
-	player->rect.y = 150;
-	player->rect.w = 30;
-	player->rect.h = 30;
-	// ======================= Player stuff here - needs to go at some point ===================
-
-	floorRect.x = 0;
-	floorRect.y = 450;
-	floorRect.w = 600;
-	floorRect.h = 50;
-
-	ladderRect.x = 250;
-	ladderRect.y = 150;
-	ladderRect.w = 60;
-	ladderRect.h = 300;
-
-	eggRect.x = 350;
-	eggRect.y = 400;
-	eggRect.w = 40;
-	eggRect.h = 50;
-
 	drawTileMap();
 	for (auto thing : sprites)
 	{
-		std::cout << std::to_string(thing->rect.x) << " " << std::to_string(thing->rect.y) << " " << std::to_string(thing->rect.w) << " " << std::to_string(thing->rect.h) << std::endl;
+		//std::cout << std::to_string(thing->rect.x) << " " << std::to_string(thing->rect.y) << " " << std::to_string(thing->rect.w) << " " << std::to_string(thing->rect.h) << std::endl;
 	}
 
 	while (!done) //loop until done flag is set)

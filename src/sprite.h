@@ -20,7 +20,7 @@ public:
 	void render(SDL_Renderer *ren);
 	enum state { idle, movingLeft, movingRight, climbUp, climbDown, jumping, falling };
 	state playerState = idle;
-	void movement(state playerState);
+	void movement();
 
 	SDL_Surface* surface;
 	SDL_Texture* texture;
