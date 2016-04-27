@@ -55,6 +55,7 @@ bool isJumping = false; // ====================================== Do this later 
 bool onLadder = false; // This will determine if the up and down keys work
 bool done = false;
 
+std::vector<sprite> sprites; 
 int tileMap[27][20] = { { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
 						{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
 						{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
@@ -85,14 +86,41 @@ int tileMap[27][20] = { { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
 
 void drawTileMap()
 {
+	float spriteW = screenW / 20;
+	float spriteH = screenH / 27;
+	float spriteX = 0.0f;
+	float spriteY = 0.0f;
+	int count = 0;
 	for (int i = 0; i <= 26; i++)
 	{
 		std::cout << std::endl;
 		for (int j = 0; j <= 19; j++)
 		{
 			std::cout << std::to_string(tileMap[i][j]);
+			if (tileMap[i][j] == 1)
+			{
+				// This is a platform
+				sprite platform("./assets/blue_square.jpg", spriteX, spriteY, spriteW, spriteH, ren);
+				sprites.push_back(platform);
+			}
+			// Do stuff THEN update positions
+			// ...
+			// ...
+
+			if (i == 19) //Final block therefore it needs resetting to 0
+			{
+				spriteX = 0.0f;
+				spriteY += spriteH;
+			}
+			else // If not the last block then just move along one
+			{
+				spriteX += spriteW;
+			}
 		}
+		
 	}
+	std::cout << std::endl;
+	std::cout << std::to_string(sprites.size());
 }
 
 void handleInput()
@@ -282,9 +310,9 @@ void updateSimulation(double simLength = 0.02) //update simulation with an amoun
 	if (((((player->rect.x + player->rect.w) > eggRect.x) &&									//
 		(player->rect.x + player->rect.w) < (eggRect.x + eggRect.w)) ||							// This is probably overly complicated
 		(((player->rect.x) > eggRect.x) && (player->rect.x) < (eggRect.x + eggRect.w))) &&		// It seems to work for now although the 
-		(((player->rect.y) < (eggRect.y + eggRect.h)) ||									// vertical stuff might be broken. I will come 
+		(((player->rect.y) < (eggRect.y + eggRect.h)) ||										// vertical stuff might be broken. I will come 
 		((player->rect.y + player->rect.h) > eggRect.y)))										// back and fix this later
-	{																					//
+	{																							//
 		std::cout << "Collide" << std::endl;
 	}
 }
@@ -299,6 +327,12 @@ void render()
 		SDL_RenderCopy(ren, ladderTexture, NULL, &ladderRect);
 		SDL_RenderCopy(ren, eggTexture, NULL, &eggRect);
 		player->render(ren);
+		
+		for (std::vector<sprite>::iterator it = sprites.begin(); it != sprites.end(); ++it)
+		{
+			it->render(ren);
+		}
+
 		//SDL_RenderCopy(ren, player.texture, NULL, &player.rect);
 		//SDL_RenderCopy(ren, testTexture, NULL, &player->rect);
 
@@ -366,19 +400,7 @@ int main( int argc, char* args[] )
 	}
 
 	// ===================================================== PLAYER STUFF HERE ====================================================
-	std::string imgPath = "./assets/red_square.png";
-	testSurface = IMG_Load(imgPath.c_str());
-	if (testSurface == nullptr) {
-		std::cout << "SDL IMG_Load Error: " << SDL_GetError() << std::endl;
-		cleanExit(1);
-	}
 
-	testTexture = SDL_CreateTextureFromSurface(ren, testSurface);
-	SDL_FreeSurface(testSurface);
-	if (testTexture == nullptr) {
-		std::cout << "SDL_CreateTextureFromSurface Error: " << SDL_GetError() << std::endl;
-		cleanExit(1);
-	}
 
 	player = new sprite("./assets/red_square.png", 150.0f, 150.0f, 30.0f, 30.0f, ren);
 	//createObjects();
@@ -459,7 +481,6 @@ int main( int argc, char* args[] )
 	eggRect.w = 40;
 	eggRect.h = 50;
 
-	//tileMap("./assets/level.txt");
 	drawTileMap();
 
 	while (!done) //loop until done flag is set)
