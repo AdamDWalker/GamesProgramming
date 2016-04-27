@@ -30,22 +30,25 @@ SDL_Rect message_rect; //SDL_rect for the message
 
 sprite* player;
 
-const int screenW = 800;
-const int screenH = 600;
+const int screenW = 800; // These are just the initial sizes of the screen, it can
+const int screenH = 600; // be resized by hand or put into fullscreen mode on keypress
 
-float moveX = 0.0f;
-float moveY = 0.0f;
-float moveSpeed = 25.0f;
-float gravity = 10.0f;
-bool isJumping = false; // ====================================== Do this later - Probably replace with an enum ====================================
+float dt = 0.0f; // This needs a rethink later since it doesn't work at the moment - 9:30pm
+float moveX = 0.0f;			//
+float moveY = 0.0f;			// These will probably be replaced with a vector object at some point
+float moveSpeed = 25.0f;	// The vector should make things easier to manipulate around.
+float gravity = 10.0f;		//
 bool onLadder = false; // This will determine if the up and down keys work
-bool isFullscreen = false;
-bool done = false;
+bool isFullscreen = false; // This is obvious. Why are you reading me for help?
+bool done = false; // Is the game still running? This powers the while loop in main.
 
-std::vector<sprite*> sprites; // This may be causing some problems I'm not sure
-sprite* tileSprite;
+std::vector<sprite*> sprites; // This is storing the sprites for the tilemap.
+sprite* tileSprite; // This is for the sprite objects being created and added to the sprites vector in drawTileMap().
+
+// ======================== Sound Effect stuff can go here =====================
 Mix_Chunk* jumpEffect;
-float dt = 0.0f;
+// =========================== End of Sound Effects ============================
+
 
 int tileMap[27][20] = { { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
 						{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
@@ -75,6 +78,9 @@ int tileMap[27][20] = { { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
 						{ 0, 0, 4, 0, 3, 0, 0, 2, 0, 0, 0, 2, 0, 4, 0, 0, 2, 0, 0, 0 },
 						{ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 } };
 
+// This runs through the tilemap and creates a sprite object for each
+// Position that requires on. These objects are added to a vector and
+// those vector elements are ran through in render to display on screen
 void drawTileMap()
 {
 	float spriteW = screenW / 20;
@@ -131,6 +137,9 @@ void drawTileMap()
 	//std::cout << std::to_string(sprites.size());
 }
 
+// This is not functional at the moment as it causes problems
+// When dt from this is used it stops right movement and 
+// Makes left movement incredibly slow.
 float getDeltaTime()
 {
 	auto t1 = Clock::now();
@@ -143,6 +152,7 @@ float getDeltaTime()
 	return dt;
 }
 
+// This takes an object and checks if the player is colliding with it
 bool boundaryCollide(sprite* object)
 {
 	float playerMinX = player->rect.x;
@@ -165,6 +175,9 @@ bool boundaryCollide(sprite* object)
 	}
 }
 
+// This is called in updateSimulation() and is used for collision stuff
+// It is mostly about the outcomes for collisions rather than the boundary 
+// Things itself, that gets passed to boundaryCollide().
 void checkCollision(sprite* object)
 {
 
@@ -427,7 +440,13 @@ int main( int argc, char* args[] )
 	}
 	std::cout << "SDL initialised OK!\n";
 
-	if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0)
+	// Initialise the audio mixer and also explained the variables.
+	// 44100 - Common hertz level for these things
+	// MIX_DEFAULT_FORMAT - Like the SDL_INIT_EVERYTHING, some init settings
+	// 2 - Audio Channels for stereo play
+	// 2048 - Sample size, can affect lag time for effect to play
+	// != 0 - Same as other init stuff, not sure why, just needs it.
+	if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) != 0)
 	{
 		std::cout << "SDL_Mixer init error: " << Mix_GetError() << std::endl;
 		cleanExit(1);
@@ -484,10 +503,6 @@ int main( int argc, char* args[] )
 	message_rect.h = 60;
 
 	drawTileMap();
-	for (auto thing : sprites)
-	{
-		//std::cout << std::to_string(thing->rect.x) << " " << std::to_string(thing->rect.y) << " " << std::to_string(thing->rect.w) << " " << std::to_string(thing->rect.h) << std::endl;
-	}
 
 	while (!done) //loop until done flag is set)
 	{
