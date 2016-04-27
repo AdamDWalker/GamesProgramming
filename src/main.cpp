@@ -138,8 +138,17 @@ void drawTileMap()
 	//std::cout << std::to_string(sprites.size());
 }
 
-void checkCollision(sprite player, sprite object)
+void checkCollision(sprite object)
 {
+	switch (object.type)
+	{
+		case sprite::platform:
+			if( ((player->rect.y + player->rect.h) > object.rect.y) )
+			break;
+
+		default:
+			break;
+	}
 }
 
 void handleInput()
@@ -342,10 +351,6 @@ void cleanExit(int returnValue)
 {
 	if (messageTexture != nullptr) SDL_DestroyTexture(messageTexture);
 	if (tex != nullptr) SDL_DestroyTexture(tex);
-	if (testTexture != nullptr) SDL_DestroyTexture(testTexture); // ===================================== Name change needed here ==================================
-	if (floorTexture != nullptr) SDL_DestroyTexture(floorTexture); // =================================== This needs moving too =================================
-	if (ladderTexture != nullptr) SDL_DestroyTexture(ladderTexture); // =================================== This needs moving too =================================
-	if (eggTexture != nullptr) SDL_DestroyTexture(eggTexture); // =================================== This needs moving too =================================
 	if (ren != nullptr) SDL_DestroyRenderer(ren);
 	if (win != nullptr) SDL_DestroyWindow(win);
 	SDL_Quit();
