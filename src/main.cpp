@@ -249,37 +249,6 @@ void handleInput()
 	}
 }
 // end::handleInput[] 
-/*
-// This is early in the program so that objects can be created here and the function called in main.
-// Hopefully this should give them a good place to group together too and still work properly :/ // ========================================= This needs dealing with ====================================
-void createObjects()
-{
-	sprite player("./assets/red_square.png", 150.0f, 150.0f, 30.0f, 30.0f, ren);
-}*/
-
-/*void tileMap(std::string fileName)
-{
-	char tileMap[20][27];
-	std::ifstream file(fileName);
-	if (file.is_open())
-	{
-		// This goes down the columns, taking each row then moving down
-		for (int i = 0; i < 27; i++)
-		{
-			std::cout << "Outer Loop" << std::endl;
-			// This goes along each row
-			for (int j = 0; j < 20; i++)
-			{
-				// Take that position and put the sprite in the right place
-				file >> tileMap[i][j];
-				//std::cout << tileMap[i][j];
-			}
-		}
-	}
-	
-}*/
-
-
 
 // tag::updateSimulation[]
 void updateSimulation(double simLength = 0.02) //update simulation with an amount of time to simulate for (in seconds)
