@@ -119,6 +119,7 @@ void drawTileMap()
 			{
 				// This is the grain
 				tileSprite = new sprite("./assets/grain.png", spriteX, spriteY, spriteW, spriteH, ren);
+				tileSprite->type = sprite::grain;
 				sprites.push_back(tileSprite);
 			}
 
@@ -194,15 +195,21 @@ void checkCollision(sprite* object)
 				//std::cout << "Collide";
 			}
 			break;
+
 		case sprite::egg:
 			if (boundaryCollide(object))
 			{
-				player->playerScore++;
-				std::cout << "Score: " << player->playerScore << std::endl;
+				if (object->active)
+				{
+					object->active = false;
+					player->playerScore += 200; // 200 points for an egg
+					std::cout << "Score: " << player->playerScore << std::endl;
+				}
 				// Destroy object
 				// Increase score
 			}
 			break;
+
 		case sprite::ladder:
 			if ((player->rect.x > object->rect.x) && ((player->rect.x + player->rect.w) < (object->rect.x + object->rect.w)))
 			//if(boundaryCollide(object))
@@ -212,6 +219,16 @@ void checkCollision(sprite* object)
 			}
 			//onLadder = false;
 			break;
+		case sprite::grain:
+			if (boundaryCollide(object))
+			{
+				if (object->active)
+				{
+					object->active = false;
+					player->playerScore += 50; // 50 Points for grain
+					std::cout << "Score: " << player->playerScore << std::endl;
+				}
+			}
 		default:
 			break;			
 	}

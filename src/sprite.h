@@ -19,12 +19,14 @@ public:
 	~sprite();
 	void render(SDL_Renderer *ren);
 	enum state { idle, movingLeft, movingRight, climbUp, climbDown, jumping, falling };
-	state playerState = idle;
 	enum spriteType {player, platform, ladder, egg, grain };
-	spriteType type;
-	bool isGrounded = false;
-	void movement();
-	int playerScore;
+	void movement(); // This goes with the enum stuff in the cpp file, movement may get moved here - if not rename probably
+	state playerState = idle;
+	spriteType type; // Basically just a tag for sprites to be easily differentiated from one another
+	bool isGrounded = false; // Is the player on a platform.
+	bool active = true; // This means the egg/grain is still available to be picked up
+	int playerScore; // This should move to the player class when I get around to that haha
+	
 
 	SDL_Surface* surface;
 	SDL_Texture* texture;
