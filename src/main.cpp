@@ -11,6 +11,7 @@ typedef std::chrono::high_resolution_clock Clock;
 #include <SDL_image.h>
 #include <SDL_ttf.h>
 #include <SDL_mixer.h>
+#include <SDL_audio.h>
 #include "sprite.h"
 #include "text.h"
 #include "enemy.h"
@@ -43,6 +44,7 @@ float moveSpeed = 25.0f;	// The vector should make things easier to manipulate a
 float gravity = 10.0f;		//
 bool onLadder = false; // This will determine if the up and down keys work
 bool isFullscreen = false; // This is obvious. Why are you reading me for help?
+bool isMusPaused = false;
 bool done = false; // Is the game still running? This powers the while loop in main.
 
 std::vector<sprite*> sprites; // This is storing the sprites for the tilemap.
@@ -54,6 +56,9 @@ enemy* hen2;
 
 // ======================== Sound Effect stuff can go here =====================
 Mix_Chunk* jumpEffect;
+Mix_Chunk* pickup1;
+Mix_Chunk* pickup2;
+Mix_Music* background;
 // =========================== End of Sound Effects ============================
 
 
@@ -210,7 +215,8 @@ void checkCollision(sprite* object, int count)
 
 				player->playerScore += 200; // 200 points for an egg
 				scoreCount->setScore(ren, player->playerScore);
-				std::cout << "Score: " << player->playerScore << std::endl;
+				//std::cout << "Score: " << player->playerScore << std::endl;
+				Mix_PlayChannel(-1, pickup1, 0);
 				sprites.erase(sprites.begin() + count);
 
 			}
@@ -232,7 +238,8 @@ void checkCollision(sprite* object, int count)
 			{
 				player->playerScore += 50; // 50 Points for grain
 				scoreCount->setScore(ren, player->playerScore);
-				std::cout << "Score: " << player->playerScore << std::endl;
+				//std::cout << "Score: " << player->playerScore << std::endl;
+				Mix_PlayChannel(-1, pickup2, 0);
 				sprites.erase(sprites.begin() + count);
 			}
 		default:
@@ -309,6 +316,10 @@ void handleInput()
 
 					case SDLK_b:
 						isFullscreen = !isFullscreen; // Invert each time on keypress
+						break;
+
+					case SDLK_m: // Pause the background music
+						isMusPaused = !isMusPaused; // Invert each time on keypress
 						break;
 				}
 			break;
@@ -408,6 +419,15 @@ void updateSimulation(double simLength = 0.02) //update simulation with an amoun
 #pragma endregion
 
 	onLadder = false;
+
+	if (isMusPaused)
+	{
+		Mix_PauseMusic();
+	}
+	else
+	{
+		Mix_ResumeMusic();
+	}
 }
 
 void render()
@@ -450,7 +470,7 @@ void render()
 
 void cleanExit(int returnValue)
 {
-	//if (messageTexture != nullptr) SDL_DestroyTexture(messageTexture);
+	if (background != nullptr) Mix_FreeMusic(background);
 	if (jumpEffect != nullptr) Mix_FreeChunk(jumpEffect);
 	if (tex != nullptr) SDL_DestroyTexture(tex);
 	if (ren != nullptr) SDL_DestroyRenderer(ren);
@@ -544,6 +564,27 @@ int main( int argc, char* args[] )
 		cleanExit(1);
 	}
 
+	pickup1 = Mix_LoadWAV("./assets/pickup1.wav");
+	if (pickup1 == nullptr)
+	{
+		std::cout << "Mix_LoadWAV Error: " << Mix_GetError() << std::endl;
+		cleanExit(1);
+	}
+
+	pickup2 = Mix_LoadWAV("./assets/pickup2.wav");
+	if (pickup2 == nullptr)
+	{
+		std::cout << "Mix_LoadWAV Error: " << Mix_GetError() << std::endl;
+		cleanExit(1);
+	}
+
+	background = Mix_LoadMUS("./assets/background_music.wav");
+	if (background == nullptr)
+	{
+		std::cout << "Mix_LoadWAV Error: " << Mix_GetError() << std::endl;
+		cleanExit(1);
+	}
+
 	if( TTF_Init() == -1 )
 	{
 		std::cout << "TTF_Init Failed: " << TTF_GetError() << std::endl;
@@ -567,6 +608,7 @@ int main( int argc, char* args[] )
 	drawTileMap();
 
 	loading->isShowing = false;
+	Mix_PlayMusic(background, -1);
 
 	while (!done) //loop until done flag is set)
 	{
