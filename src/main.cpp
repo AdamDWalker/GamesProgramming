@@ -54,6 +54,7 @@ sprite* tileSprite; // This is for the sprite objects being created and added to
 text* loading;
 enemy* hen1;
 enemy* hen2;
+enemy* hen3;
 
 // ======================== Sound Effect stuff can go here =====================
 Mix_Chunk* jumpEffect;
@@ -389,16 +390,23 @@ void updateSimulation(double simLength = 0.02) //update simulation with an amoun
 
 	for (auto hen : hens)
 	{
-		if (hen->state == enemy::moveLeft)
+		float startPoint = hen->rect.x;
+		float endPoint = hen->xTarget1;
+
+		if (hen->rect.x < endPoint)
 		{
-			hen->rect.x -= 10 * simLength;
+			hen->rect.x += 25 * simLength;
 		}
-		else if (hen->state == enemy::moveRight)
+		else
 		{
-			hen->rect.x += 10 * simLength;
+
+			hen->rect.x -= 25 * simLength;
 		}
+
 	}
-	hen1->animateEnemy();
+
+
+	//hen1->animateEnemy();
 
 #pragma region On Ladder Move Check
 	if (onLadder)
@@ -548,9 +556,12 @@ int main( int argc, char* args[] )
 	player->bufferMax = 5;
 
 #pragma region Hens
-	hen1 = new enemy("./assets/spritesheet.png", 200, 200, 24, 40, ren);
+	hen1 = new enemy("./assets/spritesheet.png", 500, 100, 24, 40, ren);
 	hens.push_back(hen1);
-	hen1->state = enemy::moveLeft;
+	hen1->state = enemy::moveRight;
+	hen1->flipDirection = true;
+	hen1->xTarget1 = 200.0f;
+	hen1->xTarget2 = 250.0f;
 	hen1->srcRect.x = 0.0f;
 	hen1->srcRect.y = 0.0f;
 	hen1->srcRect.w = 24.0f;
@@ -559,12 +570,25 @@ int main( int argc, char* args[] )
 	hen2 = new enemy("./assets/spritesheet.png", 700, 530, 24, 40, ren);
 	hens.push_back(hen2);
 	hen2->state = enemy::moveLeft;
+	hen2->xTarget1 = 100.0f;
+	hen2->xTarget2 = 750.0f;
 	hen2->srcRect.x = 0.0f;
 	hen2->srcRect.y = 0.0f;
 	hen2->srcRect.w = 24.0f;
 	hen2->srcRect.h = 40.0f;
+
+	hen3 = new enemy("./assets/spritesheet.png", 600, 280, 24, 40, ren);
+	hens.push_back(hen3);
+	hen3->state = enemy::moveRight;
+	hen3->xTarget1 = 100.0f;
+	hen3->xTarget2 = 750.0f;
+	hen3->srcRect.x = 0.0f;
+	hen3->srcRect.y = 0.0f;
+	hen3->srcRect.w = 24.0f;
+	hen3->srcRect.h = 40.0f;
 #pragma endregion
 
+#pragma region Audio stuff
 	// This is formatted in the same way to the default code from John as it makes sense and I want to stick to it.
 	jumpEffect = Mix_LoadWAV("./assets/jump.wav");
 	if (jumpEffect == nullptr)
@@ -593,6 +617,8 @@ int main( int argc, char* args[] )
 		std::cout << "Mix_LoadWAV Error: " << Mix_GetError() << std::endl;
 		cleanExit(1);
 	}
+#pragma endregion
+
 
 	if( TTF_Init() == -1 )
 	{
