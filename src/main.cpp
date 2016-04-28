@@ -45,6 +45,7 @@ float gravity = 10.0f;		//
 bool onLadder = false; // This will determine if the up and down keys work
 bool isFullscreen = false; // This is obvious. Why are you reading me for help?
 bool isMusPaused = false;
+int volume = 100;
 bool done = false; // Is the game still running? This powers the while loop in main.
 
 std::vector<sprite*> sprites; // This is storing the sprites for the tilemap.
@@ -321,6 +322,12 @@ void handleInput()
 					case SDLK_m: // Pause the background music
 						isMusPaused = !isMusPaused; // Invert each time on keypress
 						break;
+					case SDLK_9: // Volume down
+						volume -= 5;
+						break;
+					case SDLK_0: // Volume down
+						volume += 5;
+						break;
 				}
 			break;
 
@@ -419,6 +426,8 @@ void updateSimulation(double simLength = 0.02) //update simulation with an amoun
 #pragma endregion
 
 	onLadder = false;
+
+	Mix_VolumeMusic(volume);
 
 	if (isMusPaused)
 	{
