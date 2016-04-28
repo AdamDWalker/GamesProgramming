@@ -354,6 +354,8 @@ void updateSimulation(double simLength = 0.02) //update simulation with an amoun
 	dt = getDeltaTime();
 	player->movement();
 
+	player->animFrameBuffer++;
+
 	player->rect.x += moveX * moveSpeed * simLength;
 
 	int deletedSpritesCount = 0;
@@ -491,6 +493,8 @@ int main( int argc, char* args[] )
 	player->srcRect.h = 32.0f;
 
 	player->playerScore = 0;
+
+	player->bufferMax = 5;
 
 	// This is formatted in the same way to the default code from John as it makes sense and I want to stick to it.
 	jumpEffect = Mix_LoadWAV("./assets/jump.wav");

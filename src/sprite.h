@@ -28,6 +28,9 @@ public:
 	int playerScore; // This should move to the player class when I get around to that haha
 	SDL_RendererFlip flipSprite;
 
+	int animFrameBuffer = 0;
+	int bufferMax = 3;
+
 	SDL_Surface* surface;
 	SDL_Texture* texture;
 	SDL_Rect rect;

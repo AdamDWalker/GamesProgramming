@@ -50,17 +50,22 @@ void sprite::movement()
 	case idle:
 		// Position not changing, player just standing still
 		srcRect.x = 0.0f;
+		animFrameBuffer = 0;
 		break;
 	case movingLeft:
 		flipSprite = SDL_FLIP_HORIZONTAL;
 		//srcRect.x = 0.0f;
-		if (srcRect.x == 54.0f)
+		if (animFrameBuffer >= bufferMax)
 		{
-			srcRect.x = 0.0f;
-		}
-		else
-		{
-			srcRect.x += 27.0f;
+			if (srcRect.x == 54.0f)
+			{
+				srcRect.x = 0.0f;
+			}
+			else
+			{
+				srcRect.x += 27.0f;
+			}
+			animFrameBuffer = 0;
 		}
 		// Position should go left
 		// Sprite animation for left
@@ -69,13 +74,17 @@ void sprite::movement()
 	case movingRight:
 		flipSprite = SDL_FLIP_NONE;
 		//srcRect.x = 0.0f;
-		if (srcRect.x == 54.0f)
+		if (animFrameBuffer >= bufferMax)
 		{
-			srcRect.x = 0.0f;
-		}
-		else
-		{
-			srcRect.x += 27.0f;
+			if (srcRect.x == 54.0f)
+			{
+				srcRect.x = 0.0f;
+			}
+			else
+			{
+				srcRect.x += 27.0f;
+			}
+			animFrameBuffer = 0;
 		}
 		// Position should change to go right
 		// Sprite animation for right
@@ -83,13 +92,17 @@ void sprite::movement()
 		break;
 	case climbing:
 		//srcRect.x = 81.0f;
-		if (srcRect.x == 189.0f)
+		if (animFrameBuffer >= bufferMax)
 		{
-			srcRect.x = 81.0f;
-		}
-		else
-		{
-			srcRect.x += 27.0f;
+			if (srcRect.x == 189.0f)
+			{
+				srcRect.x = 81.0f;
+			}
+			else
+			{
+				srcRect.x += 27.0f;
+			}
+			animFrameBuffer = 0;
 		}
 		// Position goes up
 		// sprite animation for climbing
@@ -97,6 +110,7 @@ void sprite::movement()
 		break;
 	case climbingIdle:
 		srcRect.x = 81.0f;
+		animFrameBuffer = 0;
 		// Position goes down
 		// sprite animation for climbing
 		// Audio for climbing
