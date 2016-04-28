@@ -9,8 +9,3 @@ enemy::~enemy()
 {
 
 }
-
-void enemy::render(SDL_Renderer *ren, bool isAnimated) : sprite(ren, isAnimated)
-{
-	SDL_RenderCopyEx(ren, texture, &srcRect, &rect, NULL, NULL, flipSprite);
-}
