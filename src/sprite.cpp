@@ -1,8 +1,5 @@
 #include "sprite.h"
 
-
-
-
 //
 // Standard constructor for now
 //

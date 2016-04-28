@@ -25,7 +25,6 @@ public:
 	state playerState = idle;
 	spriteType type; // Basically just a tag for sprites to be easily differentiated from one another
 	bool isGrounded = false; // Is the player on a platform.
-	bool active = true; // This means the egg/grain is still available to be picked up
 	int playerScore; // This should move to the player class when I get around to that haha
 	SDL_RendererFlip flipSprite;
 

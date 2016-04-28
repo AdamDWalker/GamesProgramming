@@ -12,6 +12,7 @@ typedef std::chrono::high_resolution_clock Clock;
 #include <SDL_ttf.h>
 #include <SDL_mixer.h>
 #include "sprite.h"
+#include "text.h"
 
 #else // NOT compiling on windows
 #include <SDL2/SDL.h>
@@ -29,6 +30,7 @@ SDL_Texture *messageTexture; //pointer to the SDL_Texture for message
 SDL_Rect message_rect; //SDL_rect for the message
 
 sprite* player;
+text* scoreCount;
 
 const int screenW = 800; // These are just the initial sizes of the screen, it can
 const int screenH = 600; // be resized by hand or put into fullscreen mode on keypress
@@ -166,8 +168,8 @@ bool boundaryCollide(sprite* object)
 	float objectMinY = object->rect.y;
 	float objectMaxX = objectMinX + object->rect.w;
 	float objectMaxY = objectMinY + object->rect.h;
-	if ((((playerMinX > objectMinX) && (playerMinX < objectMaxX)) && ((playerMaxY > objectMinY) && (playerMaxY < objectMaxY))) ||
-		(((playerMaxX > objectMinX) && (playerMaxX < objectMaxX)) && ((playerMaxY > objectMinY) && (playerMaxY < objectMaxY ))))
+	if ((((playerMinX > objectMinX) && (playerMinX < objectMaxX)) && ((playerMaxY >= objectMinY -1) && (playerMaxY <= objectMaxY +1))) ||
+		(((playerMaxX > objectMinX) && (playerMaxX < objectMaxX)) && ((playerMaxY >= objectMinY -1) && (playerMaxY <= objectMaxY +1))))
 	{
 		return true;
 	}
@@ -199,21 +201,17 @@ void checkCollision(sprite* object, int count)
 		case sprite::egg:
 			if (boundaryCollide(object))
 			{
-				if (object->active)
-				{
-					object->active = false;
-					player->playerScore += 200; // 200 points for an egg
-					std::cout << "Score: " << player->playerScore << std::endl;
-					sprites.erase(sprites.begin() + count);
-					//delete object;
-				}
-				// Destroy object
-				// Increase score
+
+				player->playerScore += 200; // 200 points for an egg
+				std::cout << "Score: " << player->playerScore << std::endl;
+				sprites.erase(sprites.begin() + count);
+
 			}
 			break;
 
 		case sprite::ladder:
-			if ((player->rect.x > object->rect.x) && ((player->rect.x + player->rect.w) < (object->rect.x + object->rect.w)))
+			if ((player->rect.x > object->rect.x) && ((player->rect.x + player->rect.w) < (object->rect.x + object->rect.w)) &&
+				((player->rect.y + player->rect.h) > object->rect.y) && (player->rect.y + player->rect.h) < ((object->rect.y + object->rect.h)))
 			//if(boundaryCollide(object))
 			{
 				onLadder = true;
@@ -224,12 +222,9 @@ void checkCollision(sprite* object, int count)
 		case sprite::grain:
 			if (boundaryCollide(object))
 			{
-				if (object->active)
-				{
-					object->active = false;
-					player->playerScore += 50; // 50 Points for grain
-					std::cout << "Score: " << player->playerScore << std::endl;
-				}
+				player->playerScore += 50; // 50 Points for grain
+				std::cout << "Score: " << player->playerScore << std::endl;
+				sprites.erase(sprites.begin() + count);
 			}
 		default:
 			break;			
@@ -403,7 +398,8 @@ void render()
 		}
 
 		//Draw the text
-		SDL_RenderCopy(ren, messageTexture, NULL, &message_rect);
+		//SDL_RenderCopy(ren, messageTexture, NULL, &message_rect);
+		scoreCount->render(ren);
 
 		player->render(ren, true);
 		//Update the screen
@@ -500,12 +496,14 @@ int main( int argc, char* args[] )
 	}
 	SDL_Color White = { 255, 255, 255 };
 	SDL_Color Purple = { 165, 0, 220 };
-	messageSurface = TTF_RenderText_Solid(sans, "Score: ", Purple);
+	/*messageSurface = TTF_RenderText_Solid(sans, "Score: ", Purple);
 	messageTexture = SDL_CreateTextureFromSurface(ren, messageSurface);
 	message_rect.x = 0;
 	message_rect.y = 0;
 	message_rect.w = 180;
-	message_rect.h = 60;
+	message_rect.h = 60;*/
+
+	scoreCount = new text(ren, player->playerScore, 0, 0, 180, 60, sans, Purple);
 
 	drawTileMap();
 
