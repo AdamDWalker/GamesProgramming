@@ -10,6 +10,7 @@ public:
 	enum enemyState {moveLeft, moveRight};
 	enemyState state;
 	void moveEnemy(float target1X, float target1Y, float target2X, float target2Y);
+	void animateEnemy();
 	float speed = 1.0f;
 
 };

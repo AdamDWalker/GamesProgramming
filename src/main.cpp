@@ -197,7 +197,7 @@ void checkCollision(sprite* object, int count)
 			// This should check that the bottom of the player is between the top/bottom of the block and also the sides 
 			if (boundaryCollide(object))
 			{
-				//player->rect.y = object->rect.y - player->rect.h; // Triggered mode engaged
+				player->rect.y = object->rect.y - player->rect.h - 1; // Triggered mode engaged
 				player->isGrounded = true;
 				gravity = 0.0f;
 				//std::cout << "Collide";
@@ -222,6 +222,7 @@ void checkCollision(sprite* object, int count)
 			//if(boundaryCollide(object))
 			{
 				onLadder = true;
+				player->isGrounded = false;
 				//std::cout << "ON LADDER" << std::endl;
 			}
 			//onLadder = false;
@@ -379,6 +380,7 @@ void updateSimulation(double simLength = 0.02) //update simulation with an amoun
 			hen->rect.x += 10 * simLength;
 		}
 	}
+	hen1->animateEnemy();
 
 #pragma region On Ladder Move Check
 	if (onLadder)
@@ -416,7 +418,6 @@ void render()
 		{
 			loading->render(ren);
 		}
-
 
 		//Draw the texture
 		for (auto object : sprites)
@@ -528,6 +529,7 @@ int main( int argc, char* args[] )
 
 	hen2 = new enemy("./assets/spritesheet.png", 700, 530, 24, 40, ren);
 	hens.push_back(hen2);
+	hen2->state = enemy::moveLeft;
 	hen2->srcRect.x = 0.0f;
 	hen2->srcRect.y = 0.0f;
 	hen2->srcRect.w = 24.0f;

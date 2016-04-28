@@ -15,3 +15,25 @@ void enemy::moveEnemy(float target1X, float target1Y, float target2X, float targ
 {
 
 }
+
+void enemy::animateEnemy()
+{
+	if (state = enemy::moveLeft)
+	{
+		//flipSprite = SDL_FLIP_HORIZONTAL;
+		//if (animFrameBuffer >= bufferMax)
+		if (srcRect.x == 40.0f)
+		{
+			srcRect.x = 0.0f;
+		}
+		else
+		{
+			srcRect.x = 40.0f;
+		}
+		//animFrameBuffer = 0;
+	}
+	else if (state = enemy::moveRight)
+	{
+
+	}
+}
