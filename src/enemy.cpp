@@ -20,8 +20,6 @@ void enemy::animateEnemy()
 {
 	if (state = enemy::moveLeft)
 	{
-		//flipSprite = SDL_FLIP_HORIZONTAL;
-		//if (animFrameBuffer >= bufferMax)
 		if (srcRect.x == 40.0f)
 		{
 			srcRect.x = 0.0f;

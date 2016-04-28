@@ -30,6 +30,9 @@ public:
 
 	int animFrameBuffer = 0;
 	int bufferMax = 3;
+	int playerLives = 3;
+
+	
 
 	SDL_Surface* surface;
 	SDL_Texture* texture;

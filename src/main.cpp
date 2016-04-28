@@ -33,6 +33,7 @@ SDL_Texture *tex; //pointer to the SDL_Texture
 
 sprite* player;
 text* scoreCount;
+text* lifeCount;
 
 const int screenW = 800; // These are just the initial sizes of the screen, it can
 const int screenH = 600; // be resized by hand or put into fullscreen mode on keypress
@@ -197,7 +198,6 @@ bool boundaryCollide(sprite* object)
 // Things itself, that gets passed to boundaryCollide().
 void checkCollision(sprite* object, int count)
 {
-
 	switch (object->type)
 	{
 		case sprite::platform:
@@ -240,6 +240,7 @@ void checkCollision(sprite* object, int count)
 			{
 				player->playerScore += 50; // 50 Points for grain
 				scoreCount->setScore(ren, player->playerScore);
+				
 				//std::cout << "Score: " << player->playerScore << std::endl;
 				Mix_PlayChannel(-1, pickup2, 0);
 				sprites.erase(sprites.begin() + count);
@@ -390,6 +391,14 @@ void updateSimulation(double simLength = 0.02) //update simulation with an amoun
 
 	for (auto hen : hens)
 	{
+		if (boundaryCollide(hen))
+		{
+			//player die 
+			player->rect.x = 50;
+			player->rect.y = 540;
+			player->playerLives -= 1;
+			lifeCount->setLife(ren, player->playerLives);
+		}
 		float startPoint = hen->rect.x;
 		float endPoint = hen->xTarget1;
 
@@ -465,6 +474,7 @@ void render()
 		//Draw the text
 		//SDL_RenderCopy(ren, messageTexture, NULL, &message_rect);
 		scoreCount->render(ren);
+		lifeCount->render(ren);
 
 		player->render(ren, true);
 		for (auto hen : hens)
@@ -635,10 +645,14 @@ int main( int argc, char* args[] )
 	SDL_Color White = { 255, 255, 255 };
 	SDL_Color Purple = { 165, 0, 220 };
 	
+	std::string lives = "Lives: " + std::to_string(player->playerLives);
+	const char* lifeCounts = lives.c_str();
+
 	loading = new text(ren, "Loading...", 200, 200, 400, 130, sans, White);
 	Load();
 
 	scoreCount = new text(ren, player->playerScore, 0, 0, 180, 60, sans, Purple);
+	lifeCount = new text(ren, lifeCounts, 600, 0, 180, 60, sans, Purple);
 
 	drawTileMap();
 

@@ -60,3 +60,12 @@ void text::setScore(SDL_Renderer* ren, int score)
 	SDL_DestroyTexture(textTexture);
 	textTexture = SDL_CreateTextureFromSurface(ren, textSurface);
 }
+
+void text::setLife(SDL_Renderer* ren, int lives)
+{
+	std::string gameScore = "Lives: " + std::to_string(lives);
+	const char* theLife = gameScore.c_str();
+	textSurface = TTF_RenderText_Solid(font, theLife, colour);
+	SDL_DestroyTexture(textTexture);
+	textTexture = SDL_CreateTextureFromSurface(ren, textSurface);
+}

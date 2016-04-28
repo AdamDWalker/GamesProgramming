@@ -21,6 +21,7 @@ public:
 	~text();
 	void render(SDL_Renderer *ren);
 	void setScore(SDL_Renderer* ren, int score);
+	void setLife(SDL_Renderer* ren, int score);
 	bool isShowing = true;
 
 	TTF_Font* font;
