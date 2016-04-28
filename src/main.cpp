@@ -46,6 +46,7 @@ bool done = false; // Is the game still running? This powers the while loop in m
 
 std::vector<sprite*> sprites; // This is storing the sprites for the tilemap.
 sprite* tileSprite; // This is for the sprite objects being created and added to the sprites vector in drawTileMap().
+text* loading;
 
 // ======================== Sound Effect stuff can go here =====================
 Mix_Chunk* jumpEffect;
@@ -393,7 +394,7 @@ void render()
 {
 		//First clear the renderer
 		SDL_RenderClear(ren);
-
+		loading->render(ren);
 
 
 		//Draw the texture
@@ -501,6 +502,9 @@ int main( int argc, char* args[] )
 	}
 	SDL_Color White = { 255, 255, 255 };
 	SDL_Color Purple = { 165, 0, 220 };
+	
+	loading = new text(ren, "Loading...", 200, 200, 400, 130, sans, White);
+
 	/*messageSurface = TTF_RenderText_Solid(sans, "Score: ", Purple);
 	messageTexture = SDL_CreateTextureFromSurface(ren, messageSurface);
 	message_rect.x = 0;

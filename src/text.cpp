@@ -23,6 +23,24 @@ text::text(SDL_Renderer *ren, int score, float xVal, float yVal, float width, fl
 	textTexture = SDL_CreateTextureFromSurface(ren, textSurface);
 }
 
+text::text(SDL_Renderer *ren, std::string message, float xVal, float yVal, float width, float height, TTF_Font* theFont, SDL_Color theColour)
+{
+	//std::string scoreString= "Score: " + std::to_string(score);
+
+	font = theFont;
+	colour = theColour;
+
+	textRect.x = xVal;
+	textRect.y = yVal;
+	textRect.w = width;
+	textRect.h = height;
+
+	const char* theMessage = message.c_str();
+
+	textSurface = TTF_RenderText_Solid(font, theMessage, colour);
+	textTexture = SDL_CreateTextureFromSurface(ren, textSurface);
+}
+
 
 text::~text()
 {
