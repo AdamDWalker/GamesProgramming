@@ -26,9 +26,9 @@ SDL_Window *win; //pointer to the SDL_Window
 SDL_Renderer *ren; //pointer to the SDL_Renderer
 SDL_Surface *surface; //pointer to the SDL_Surfaced
 SDL_Texture *tex; //pointer to the SDL_Texture
-SDL_Surface *messageSurface; //pointer to the SDL_Surface for message
-SDL_Texture *messageTexture; //pointer to the SDL_Texture for message
-SDL_Rect message_rect; //SDL_rect for the message
+//SDL_Surface *messageSurface; //pointer to the SDL_Surface for message
+//SDL_Texture *messageTexture; //pointer to the SDL_Texture for message
+//SDL_Rect message_rect; //SDL_rect for the message
 
 sprite* player;
 text* scoreCount;
@@ -46,9 +46,11 @@ bool isFullscreen = false; // This is obvious. Why are you reading me for help?
 bool done = false; // Is the game still running? This powers the while loop in main.
 
 std::vector<sprite*> sprites; // This is storing the sprites for the tilemap.
+std::vector<enemy*> hens;
 sprite* tileSprite; // This is for the sprite objects being created and added to the sprites vector in drawTileMap().
 text* loading;
-enemy* hen;
+enemy* hen1;
+enemy* hen2;
 
 // ======================== Sound Effect stuff can go here =====================
 Mix_Chunk* jumpEffect;
@@ -366,6 +368,18 @@ void updateSimulation(double simLength = 0.02) //update simulation with an amoun
 		checkCollision(sprites[i], i);
 	}
 
+	for (auto hen : hens)
+	{
+		if (hen->state == enemy::moveLeft)
+		{
+			hen->rect.x -= 10 * simLength;
+		}
+		else if (hen->state == enemy::moveRight)
+		{
+			hen->rect.x += 10 * simLength;
+		}
+	}
+
 #pragma region On Ladder Move Check
 	if (onLadder)
 	{
@@ -415,7 +429,11 @@ void render()
 		scoreCount->render(ren);
 
 		player->render(ren, true);
-		hen->render(ren, true);
+		for (auto hen : hens)
+		{
+			hen->render(ren, true);
+		}
+
 		//Update the screen
 		SDL_RenderPresent(ren);
 		SDL_RenderSetLogicalSize(ren, screenW, screenH);
@@ -431,7 +449,7 @@ void render()
 
 void cleanExit(int returnValue)
 {
-	if (messageTexture != nullptr) SDL_DestroyTexture(messageTexture);
+	//if (messageTexture != nullptr) SDL_DestroyTexture(messageTexture);
 	if (jumpEffect != nullptr) Mix_FreeChunk(jumpEffect);
 	if (tex != nullptr) SDL_DestroyTexture(tex);
 	if (ren != nullptr) SDL_DestroyRenderer(ren);
@@ -491,7 +509,7 @@ int main( int argc, char* args[] )
 		cleanExit(1);
 	}
 
-	player = new sprite("./assets/spritesheet.png", 150.0f, 150.0f, 24.0f, 32.0f, ren);
+	player = new sprite("./assets/spritesheet.png", 50.0f, 520.0f, 24.0f, 32.0f, ren);
 	player->srcRect.x = 0.0f;
 	player->srcRect.y = 96.0f;
 	player->srcRect.w = 24.0f;
@@ -499,11 +517,22 @@ int main( int argc, char* args[] )
 	player->playerScore = 0;
 	player->bufferMax = 5;
 
-	hen = new enemy("./assets/spritesheet.png", 200, 200, 24, 40, ren);
-	hen->srcRect.x = 0.0f;
-	hen->srcRect.y = 0.0f;
-	hen->srcRect.w = 24.0f;
-	hen->srcRect.h = 40.0f;
+#pragma region Hens
+	hen1 = new enemy("./assets/spritesheet.png", 200, 200, 24, 40, ren);
+	hens.push_back(hen1);
+	hen1->state = enemy::moveLeft;
+	hen1->srcRect.x = 0.0f;
+	hen1->srcRect.y = 0.0f;
+	hen1->srcRect.w = 24.0f;
+	hen1->srcRect.h = 40.0f;
+
+	hen2 = new enemy("./assets/spritesheet.png", 700, 530, 24, 40, ren);
+	hens.push_back(hen2);
+	hen2->srcRect.x = 0.0f;
+	hen2->srcRect.y = 0.0f;
+	hen2->srcRect.w = 24.0f;
+	hen2->srcRect.h = 40.0f;
+#pragma endregion
 
 	// This is formatted in the same way to the default code from John as it makes sense and I want to stick to it.
 	jumpEffect = Mix_LoadWAV("./assets/jump.wav");
@@ -530,12 +559,6 @@ int main( int argc, char* args[] )
 	
 	loading = new text(ren, "Loading...", 200, 200, 400, 130, sans, White);
 	Load();
-	/*messageSurface = TTF_RenderText_Solid(sans, "Score: ", Purple);
-	messageTexture = SDL_CreateTextureFromSurface(ren, messageSurface);
-	message_rect.x = 0;
-	message_rect.y = 0;
-	message_rect.w = 180;
-	message_rect.h = 60;*/
 
 	scoreCount = new text(ren, player->playerScore, 0, 0, 180, 60, sans, Purple);
 
