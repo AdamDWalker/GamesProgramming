@@ -19,10 +19,10 @@ public:
 	text(SDL_Renderer *ren, int score, float xVal, float yVal, float width, float height, TTF_Font* font, SDL_Color colour);
 	~text();
 	void render(SDL_Renderer *ren);
-	void setScore(int score);
+	void setScore(SDL_Renderer* ren, int score);
 
-	//TTF_Font* font;
-	//SDL_Color colour;
+	TTF_Font* font;
+	SDL_Color colour;
 	SDL_Surface* textSurface;
 	SDL_Texture* textTexture;
 	SDL_Rect textRect;

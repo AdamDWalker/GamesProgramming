@@ -52,6 +52,7 @@ Mix_Chunk* jumpEffect;
 // =========================== End of Sound Effects ============================
 
 
+
 int tileMap[27][20] = { { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
 						{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
 						{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
@@ -203,6 +204,7 @@ void checkCollision(sprite* object, int count)
 			{
 
 				player->playerScore += 200; // 200 points for an egg
+				scoreCount->setScore(ren, player->playerScore);
 				std::cout << "Score: " << player->playerScore << std::endl;
 				sprites.erase(sprites.begin() + count);
 
@@ -223,6 +225,7 @@ void checkCollision(sprite* object, int count)
 			if (boundaryCollide(object))
 			{
 				player->playerScore += 50; // 50 Points for grain
+				scoreCount->setScore(ren, player->playerScore);
 				std::cout << "Score: " << player->playerScore << std::endl;
 				sprites.erase(sprites.begin() + count);
 			}
@@ -390,6 +393,8 @@ void render()
 {
 		//First clear the renderer
 		SDL_RenderClear(ren);
+
+
 
 		//Draw the texture
 		for (auto object : sprites)

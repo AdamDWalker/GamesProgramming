@@ -7,9 +7,12 @@
 #include <chrono>
 
 
-text::text(SDL_Renderer *ren, int score, float xVal, float yVal, float width, float height, TTF_Font* font, SDL_Color colour)
+text::text(SDL_Renderer *ren, int score, float xVal, float yVal, float width, float height, TTF_Font* theFont, SDL_Color theColour)
 {
 	//std::string scoreString= "Score: " + std::to_string(score);
+
+	font = theFont;
+	colour = theColour;
 
 	textRect.x = xVal;
 	textRect.y = yVal;
@@ -23,9 +26,20 @@ text::text(SDL_Renderer *ren, int score, float xVal, float yVal, float width, fl
 
 text::~text()
 {
+	SDL_DestroyTexture(textTexture);
 }
 
 void text::render(SDL_Renderer *ren)
 {
 	SDL_RenderCopy(ren, textTexture, NULL, &textRect);
+}
+
+void text::setScore(SDL_Renderer* ren, int score)
+{
+	std::string gameScore = "Score: " + std::to_string(score);
+	const char* theScore = gameScore.c_str();
+	textSurface = TTF_RenderText_Solid(font, theScore, colour);
+	std::cout << "Score: " + score << std::endl;
+	SDL_DestroyTexture(textTexture);
+	textTexture = SDL_CreateTextureFromSurface(ren, textSurface);
 }
