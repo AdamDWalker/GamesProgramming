@@ -52,9 +52,11 @@ void sprite::movement()
 	{
 	case idle:
 		// Position not changing, player just standing still
+		srcRect.x = 0.0f;
 		break;
 	case movingLeft:
 		flipSprite = SDL_FLIP_HORIZONTAL;
+		//srcRect.x = 0.0f;
 		if (srcRect.x == 54.0f)
 		{
 			srcRect.x = 0.0f;
@@ -69,6 +71,7 @@ void sprite::movement()
 		break;
 	case movingRight:
 		flipSprite = SDL_FLIP_NONE;
+		//srcRect.x = 0.0f;
 		if (srcRect.x == 54.0f)
 		{
 			srcRect.x = 0.0f;
@@ -81,12 +84,22 @@ void sprite::movement()
 		// Sprite animation for right
 		// Audio for moving
 		break;
-	case climbUp:
+	case climbing:
+		//srcRect.x = 81.0f;
+		if (srcRect.x == 189.0f)
+		{
+			srcRect.x = 81.0f;
+		}
+		else
+		{
+			srcRect.x += 27.0f;
+		}
 		// Position goes up
 		// sprite animation for climbing
 		// audio for climbing
 		break;
-	case climbDown:
+	case climbingIdle:
+		srcRect.x = 81.0f;
 		// Position goes down
 		// sprite animation for climbing
 		// Audio for climbing

@@ -180,7 +180,7 @@ bool boundaryCollide(sprite* object)
 // This is called in updateSimulation() and is used for collision stuff
 // It is mostly about the outcomes for collisions rather than the boundary 
 // Things itself, that gets passed to boundaryCollide().
-void checkCollision(sprite* object)
+void checkCollision(sprite* object, int count)
 {
 
 	switch (object->type)
@@ -204,7 +204,7 @@ void checkCollision(sprite* object)
 					object->active = false;
 					player->playerScore += 200; // 200 points for an egg
 					std::cout << "Score: " << player->playerScore << std::endl;
-					//sprites.erase();
+					sprites.erase(sprites.begin() + count);
 					//delete object;
 				}
 				// Destroy object
@@ -293,14 +293,13 @@ void handleInput()
 						break;
 
 					case SDLK_w:
-						//if (onLadder)
-						player->playerState = sprite::climbUp;
+						player->playerState = sprite::climbing;
 						gravity = 0.0f;
 						moveY = -10.0f;
 						break;
 
 					case SDLK_s:
-						player->playerState = sprite::climbDown;
+						player->playerState = sprite::climbing;
 						moveY = 10.0f;
 						break;
 
@@ -333,13 +332,13 @@ void handleInput()
 						break;
 
 					case SDLK_w:
-						player->playerState = sprite::idle;
+						player->playerState = sprite::climbingIdle;
 						gravity = 10.0f;
 						moveY = 0.0f;
 						break;
 
 					case SDLK_s:
-						player->playerState = sprite::idle;
+						player->playerState = sprite::climbingIdle;
 						gravity = 10.0f;
 						moveY = 0.0f;
 						break;
@@ -358,10 +357,10 @@ void updateSimulation(double simLength = 0.02) //update simulation with an amoun
 
 	player->rect.x += moveX * moveSpeed * simLength;
 
-
-	for (auto object : sprites)
+	int deletedSpritesCount = 0;
+	for (int i = 0; i < sprites.size() - deletedSpritesCount; i++)//auto object : sprites)
 	{
-		checkCollision(object);
+		checkCollision(sprites[i], i);
 	}
 
 #pragma region On Ladder Move Check

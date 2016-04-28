@@ -19,7 +19,7 @@ public:
 	~sprite();
 	void render(SDL_Renderer *ren);
 	void render(SDL_Renderer *ren, bool isAnimated);
-	enum state { idle, movingLeft, movingRight, climbUp, climbDown, jumping, falling };
+	enum state { idle, movingLeft, movingRight, climbing, climbingIdle, jumping, falling };
 	enum spriteType {player, platform, ladder, egg, grain };
 	void movement(); // This goes with the enum stuff in the cpp file, movement may get moved here - if not rename probably
 	state playerState = idle;
