@@ -13,6 +13,7 @@ typedef std::chrono::high_resolution_clock Clock;
 #include <SDL_mixer.h>
 #include "sprite.h"
 #include "text.h"
+#include "enemy.h"
 
 #else // NOT compiling on windows
 #include <SDL2/SDL.h>
@@ -47,6 +48,7 @@ bool done = false; // Is the game still running? This powers the while loop in m
 std::vector<sprite*> sprites; // This is storing the sprites for the tilemap.
 sprite* tileSprite; // This is for the sprite objects being created and added to the sprites vector in drawTileMap().
 text* loading;
+enemy* hen;
 
 // ======================== Sound Effect stuff can go here =====================
 Mix_Chunk* jumpEffect;
@@ -396,8 +398,10 @@ void render()
 {
 		//First clear the renderer
 		SDL_RenderClear(ren);
-		if(loading->isShowing)
+		if (loading->isShowing)
+		{
 			loading->render(ren);
+		}
 
 
 		//Draw the texture
@@ -411,6 +415,7 @@ void render()
 		scoreCount->render(ren);
 
 		player->render(ren, true);
+		hen->render(ren, true);
 		//Update the screen
 		SDL_RenderPresent(ren);
 		SDL_RenderSetLogicalSize(ren, screenW, screenH);
@@ -491,10 +496,14 @@ int main( int argc, char* args[] )
 	player->srcRect.y = 96.0f;
 	player->srcRect.w = 24.0f;
 	player->srcRect.h = 32.0f;
-
 	player->playerScore = 0;
-
 	player->bufferMax = 5;
+
+	hen = new enemy("./assets/spritesheet.png", 200, 200, 24, 40, ren);
+	hen->srcRect.x = 0.0f;
+	hen->srcRect.y = 0.0f;
+	hen->srcRect.w = 24.0f;
+	hen->srcRect.h = 40.0f;
 
 	// This is formatted in the same way to the default code from John as it makes sense and I want to stick to it.
 	jumpEffect = Mix_LoadWAV("./assets/jump.wav");
