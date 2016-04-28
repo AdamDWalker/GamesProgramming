@@ -394,7 +394,8 @@ void render()
 {
 		//First clear the renderer
 		SDL_RenderClear(ren);
-		loading->render(ren);
+		if(loading->isShowing)
+			loading->render(ren);
 
 
 		//Draw the texture
@@ -430,6 +431,17 @@ void cleanExit(int returnValue)
 	if (win != nullptr) SDL_DestroyWindow(win);
 	SDL_Quit();
 	exit(returnValue);
+}
+
+void Load()
+{
+	SDL_RenderClear(ren);
+
+	SDL_RenderCopy(ren, loading->textTexture, NULL, &loading->textRect);
+
+	SDL_RenderPresent(ren);
+
+	SDL_Delay(500); 
 }
 
 // based on http://www.willusher.io/sdl2%20tutorials/2013/08/17/lesson-1-hello-world/
@@ -504,7 +516,7 @@ int main( int argc, char* args[] )
 	SDL_Color Purple = { 165, 0, 220 };
 	
 	loading = new text(ren, "Loading...", 200, 200, 400, 130, sans, White);
-
+	Load();
 	/*messageSurface = TTF_RenderText_Solid(sans, "Score: ", Purple);
 	messageTexture = SDL_CreateTextureFromSurface(ren, messageSurface);
 	message_rect.x = 0;
@@ -515,6 +527,8 @@ int main( int argc, char* args[] )
 	scoreCount = new text(ren, player->playerScore, 0, 0, 180, 60, sans, Purple);
 
 	drawTileMap();
+
+	loading->isShowing = false;
 
 	while (!done) //loop until done flag is set)
 	{
