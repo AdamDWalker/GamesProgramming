@@ -204,6 +204,8 @@ void checkCollision(sprite* object)
 					object->active = false;
 					player->playerScore += 200; // 200 points for an egg
 					std::cout << "Score: " << player->playerScore << std::endl;
+					//sprites.erase();
+					//delete object;
 				}
 				// Destroy object
 				// Increase score
@@ -353,6 +355,7 @@ void updateSimulation(double simLength = 0.02) //update simulation with an amoun
 {
 	dt = getDeltaTime();
 	player->movement();
+
 	player->rect.x += moveX * moveSpeed * simLength;
 
 
@@ -403,7 +406,7 @@ void render()
 		//Draw the text
 		SDL_RenderCopy(ren, messageTexture, NULL, &message_rect);
 
-		player->render(ren);
+		player->render(ren, true);
 		//Update the screen
 		SDL_RenderPresent(ren);
 		SDL_RenderSetLogicalSize(ren, screenW, screenH);
@@ -468,7 +471,12 @@ int main( int argc, char* args[] )
 		cleanExit(1);
 	}
 
-	player = new sprite("./assets/red_square.png", 150.0f, 150.0f, 24.0f, 32.0f, ren);
+	player = new sprite("./assets/spritesheet.png", 150.0f, 150.0f, 24.0f, 32.0f, ren);
+	player->srcRect.x = 0.0f;
+	player->srcRect.y = 96.0f;
+	player->srcRect.w = 24.0f;
+	player->srcRect.h = 32.0f;
+
 	player->playerScore = 0;
 
 	// This is formatted in the same way to the default code from John as it makes sense and I want to stick to it.

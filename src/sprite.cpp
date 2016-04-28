@@ -12,6 +12,7 @@ sprite::sprite(std::string imgPath, float rectX, float rectY, float rectW, float
 	rect.y = rectY;
 	rect.w = rectW;
 	rect.h = rectH;
+
 	surface = IMG_Load(imgPath.c_str());
 	if (surface == nullptr) {
 		std::cout << "SDL IMG_Load Error: " << SDL_GetError() << std::endl;
@@ -36,7 +37,13 @@ sprite::~sprite()
 void sprite::render(SDL_Renderer *ren)
 {
 	//std::cout << "Render called" << std::endl;
-	SDL_RenderCopy(ren, texture, NULL, &rect);
+	SDL_RenderCopy(ren, texture, NULL, &rect );
+}
+
+void sprite::render(SDL_Renderer *ren, bool isAnimated)
+{
+	//std::cout << "Render called" << std::endl;
+	SDL_RenderCopyEx(ren, texture, &srcRect, &rect, NULL, NULL, flipSprite);
 }
 
 void sprite::movement()
@@ -47,11 +54,29 @@ void sprite::movement()
 		// Position not changing, player just standing still
 		break;
 	case movingLeft:
+		flipSprite = SDL_FLIP_HORIZONTAL;
+		if (srcRect.x == 54.0f)
+		{
+			srcRect.x = 0.0f;
+		}
+		else
+		{
+			srcRect.x += 27.0f;
+		}
 		// Position should go left
 		// Sprite animation for left
 		// Audio for moving should play
 		break;
 	case movingRight:
+		flipSprite = SDL_FLIP_NONE;
+		if (srcRect.x == 54.0f)
+		{
+			srcRect.x = 0.0f;
+		}
+		else
+		{
+			srcRect.x += 27.0f;
+		}
 		// Position should change to go right
 		// Sprite animation for right
 		// Audio for moving
